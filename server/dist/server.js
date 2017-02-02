@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; } ();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+// import multer from 'multer';
+
 
 var _express = require('express');
 
@@ -22,22 +24,17 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
-var SqueezeServer = require('squeezenode');
+var _squeezenode = require('squeezenode');
 
-var squeeze = new SqueezeServer('http://192.168.0.30', 9000);
+var _squeezenode2 = _interopRequireDefault(_squeezenode);
+
+var _jayson = require('jayson');
+
+var _jayson2 = _interopRequireDefault(_jayson);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-// import multer from 'multer';
-
-squeeze.on('register', function () {
-    //you're ready to use the api, eg.
-    squeeze.getPlayers(function (reply) {
-        console.dir(reply);
-    });
-});
 
 var Server = function () {
     function Server() {
@@ -45,8 +42,8 @@ var Server = function () {
 
         this.app = (0, _express2.default)();
         this.fs = _fs2.default;
-
-        // this.upload = multer({dest: 'uploads/'});
+        this.squeeze = new _squeezenode2.default('http://localhost', 9000);
+        //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
         this.dataFile = _path2.default.join(__dirname, '../data.json');
     }
 
@@ -75,32 +72,178 @@ var Server = function () {
             });
         }
     }, {
+        key: 'extractMasterPlayer',
+        value: function extractMasterPlayer(reply) {
+            console.log(reply);
+            return reply.result[0];
+        }
+    }, {
+        key: 'getMasterPlayer',
+        value: function getMasterPlayer() {
+            var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            return realPlayer;
+        }
+    }, {
         key: 'configureRoutes',
         value: function configureRoutes() {
             var _this = this;
 
-            // Ignore this
-            // this.app.post('/api/image', this.upload.single('image'), (req, res) => {
-            //     console.log(req.file);
-            //     res.json({image: 'http://localhost:1337/'+req.file.path})
-            // });
-            this.app.get('/api/comments', function (req, res) {
-                squeeze.getPlayers(function (reply) {
-                    console.dir(reply);
+            this.app.get('/api/music/status', function (req, res) {
+                var realPlayer = _this.getMasterPlayer();
+
+                realPlayer.getStatus(function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                    stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                    stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                    stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                    res.json(JSON.parse(stringified));
                 });
 
-                squeeze.getSyncGroups(function (reply) {
-                    console.dir(reply);
+                //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            });
+
+            this.app.get('/api/music/playlist', function (req, res) {
+                var realPlayer = _this.getMasterPlayer();
+
+                realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    stringified = stringified.replace(/playlist index/g, 'playlist_index');
+                    res.json(JSON.parse(stringified));
                 });
+
+                //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            });
+
+            this.app.get('/api/music/command/:cmdid', function (req, res) {
+
+                console.log(req.params.cmdid);
+
+                var command = req.params.cmdid;
+
+                var realPlayer = _this.getMasterPlayer();
+
+                if (command == 'playrandom') {
+                    realPlayer.playRandom('tracks', function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            console.dir(sqeezeResult2);
+                            var stringified = JSON.stringify(sqeezeResult2.result);
+                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            res.json(JSON.parse(stringified));
+                        });
+                    });
+                }
+
+                if (command == 'play') {
+                    realPlayer.play(function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            console.dir(sqeezeResult2);
+                            var stringified = JSON.stringify(sqeezeResult2.result);
+                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            res.json(JSON.parse(stringified));
+                        });
+                    });
+                }
+
+                if (command == 'pause') {
+                    realPlayer.pause(function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            console.dir(sqeezeResult2);
+                            var stringified = JSON.stringify(sqeezeResult2.result);
+                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            res.json(JSON.parse(stringified));
+                        });
+                    });
+                }
+
+                if (command == 'next') {
+                    realPlayer.next(function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            console.dir(sqeezeResult2);
+                            var stringified = JSON.stringify(sqeezeResult2.result);
+                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            res.json(JSON.parse(stringified));
+                        });
+                    });
+                }
+
+                if (command == 'prev') {
+                    realPlayer.previous(function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            console.dir(sqeezeResult2);
+                            var stringified = JSON.stringify(sqeezeResult2.result);
+                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            res.json(JSON.parse(stringified));
+                        });
+                    });
+                }
+
+                //this.sqeezePlayer.getPlaylist(0,10,this.getPlayList);
 
                 _this.fs.readFile(_this.dataFile, function (err, data) {
                     if (err) {
                         console.error(err);
                         process.exit(1);
                     }
-                    res.json(JSON.parse(data));
+                    //res.json(JSON.parse(data));
                 });
             });
+
+            this.app.put('/api/comments/:id', function (req, res) {
+                _this.fs.readFile(_this.dataFile, function (err, data) {
+                    if (err) {
+                        console.error(err);
+                        process.exit(1);
+                    }
+                    var comments = JSON.parse(data);
+                    var idIndex = 0;
+                    var findCommentById = comments.filter(function (comment) {
+                        if (comment.id == req.params.id) {
+                            idIndex = comments.indexOf(comment);
+                            return comment;
+                        }
+                    });
+                    findCommentById[0].text = req.body.text;
+                    findCommentById[0].author = req.body.author;
+
+                    comments.splice(idIndex, 1, findCommentById[0]);
+                    _this.fs.writeFile(_this.dataFile, JSON.stringify(comments, null, 4), function (err) {
+                        if (err) {
+                            console.error(err);
+                            process.exit(1);
+                        }
+                        res.json(comments);
+                    });
+                });
+            });
+
             this.app.post('/api/comments', function (req, res) {
                 _this.fs.readFile(_this.dataFile, function (err, data) {
                     if (err) {
@@ -139,6 +282,7 @@ var Server = function () {
                     });
                 });
             });
+
             this.app.put('/api/comments/:id', function (req, res) {
                 _this.fs.readFile(_this.dataFile, function (err, data) {
                     if (err) {
@@ -213,6 +357,6 @@ var Server = function () {
     }]);
 
     return Server;
-} ();
+}();
 
 exports.default = Server;

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 
 
 import { Comment } from '../model/comment';
-import {CommentService} from '../services/comment.service';
+import { CommentService } from '../services/comment.service';
 import { EmitterService } from '../../emitter.service';
 
 // Component decorator
@@ -14,41 +14,41 @@ import { EmitterService } from '../../emitter.service';
     template: `
         <comment-box [editId]="editId" [listId]="listId" *ngFor="let comment of comments" [comment]="comment"></comment-box>
     `,
-    
+
 })
 // Component class
-export class CommentListComponent implements OnInit, OnChanges{
+export class CommentListComponent implements OnInit, OnChanges {
     // Constructor with injected service
     constructor(
         private commentService: CommentService
-        ){}
+    ) { }
     // Local properties
     comments: Comment[];
     // Input properties
     @Input() listId: string;
     @Input() editId: string;
 
-    loadComments(){
+    loadComments() {
         // Get all comments
-         this.commentService.getComments()
-                           .subscribe(
-                               comments => this.comments = comments, //Bind to view
-                                err => {
-                                    // Log errors if any
-                                    console.log(err);
-                                });
+        this.commentService.getComments()
+            .subscribe(
+            comments => this.comments = comments, // Bind to view
+            err => {
+                // Log errors if any
+                console.log(err);
+            });
     }
 
-    ngOnInit(){
-            // Load comments
-            this.loadComments()
+    ngOnInit() {
+        // Load comments
+        this.loadComments();
     }
-    
 
-    ngOnChanges(changes:any) {
+
+    ngOnChanges(changes: any) {
         // Listen to the 'list'emitted event so as populate the model
         // with the event payload
-        EmitterService.get(this.listId).subscribe((comments:Comment[]) => {this.comments = comments});
+        EmitterService.get(this.listId).subscribe((comments: Comment[]) => { this.comments = comments });
     }
-    
- }
+
+}

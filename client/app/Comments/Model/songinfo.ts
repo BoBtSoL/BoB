@@ -1,5 +1,4 @@
-/* * * ./app/comments/model/comment.ts * * */
-export class Comment {
+export class Songinfo {
 
         playlist_index: number;
         id: number;

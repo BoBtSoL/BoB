@@ -3,26 +3,29 @@ import bodyParser from 'body-parser';
 import fs from 'fs';
 import path from 'path';
 // import multer from 'multer';
-
+import SqueezeServer from 'squeezenode';
+import Jayson from 'jayson';
 
 class Server {
-    constructor(){
+
+
+    constructor() {
         this.app = express();
         this.fs = fs;
-        
+        this.squeeze = new SqueezeServer('http://localhost', 9000);
+        //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
+        this.dataFile = path.join(__dirname, '../data.json');
 
-        // this.upload = multer({dest: 'uploads/'});
-        this.dataFile  = path.join(__dirname, '../data.json');
     }
 
     configureApp() {
         this.app.set('port', (process.env.PORT || 3000));
         // this.app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
         this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({extended: true}));
+        this.app.use(bodyParser.urlencoded({ extended: true }));
     }
 
-    configureCORS(){
+    configureCORS() {
         // Additional middleware which will set headers that we need on each request.
         this.app.use((req, res, next) => {
             // Set permissive CORS header - this allows this server to be used only as
@@ -37,21 +40,183 @@ class Server {
         });
     }
 
-    configureRoutes(){
-      // Ignore this
-      // this.app.post('/api/image', this.upload.single('image'), (req, res) => {
-      //     console.log(req.file);
-      //     res.json({image: 'http://localhost:1337/'+req.file.path})
-      // });
-        this.app.get('/api/comments', (req, res) => {
+    extractMasterPlayer(reply) {
+        console.log(reply);
+        return reply.result[0];
+    }
+
+    getMasterPlayer() {
+        var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+        return realPlayer;
+    }
+
+    configureRoutes() {
+
+        this.app.get('/api/music/status', (req, res) => {
+            var realPlayer = this.getMasterPlayer();
+
+            realPlayer.getStatus(function (sqeezeResult) {
+                console.dir(sqeezeResult);
+                var stringified = JSON.stringify(sqeezeResult.result);
+                stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                res.json(JSON.parse(stringified));
+            });
+
+            //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+
+        });
+
+        this.app.get('/api/music/playlist', (req, res) => {
+            var realPlayer = this.getMasterPlayer();
+
+            realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
+                console.dir(sqeezeResult);
+                var stringified = JSON.stringify(sqeezeResult.result);
+                stringified = stringified.replace(/playlist index/g, 'playlist_index');
+                res.json(JSON.parse(stringified));
+            });
+
+            //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+
+        });
+
+
+        this.app.get('/api/music/command/:cmdid', (req, res) => {
+
+            console.log(req.params.cmdid);
+
+            var command = req.params.cmdid;
+
+            var realPlayer = this.getMasterPlayer();
+
+            if (command == 'playrandom') {
+                realPlayer.playRandom('tracks', function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        console.dir(sqeezeResult2);
+                        var stringified = JSON.stringify(sqeezeResult2.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                });
+
+            }
+
+
+            if (command == 'play') {
+                realPlayer.play(function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        console.dir(sqeezeResult2);
+                        var stringified = JSON.stringify(sqeezeResult2.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                });
+
+            }
+
+            if (command == 'pause') {
+                realPlayer.pause(function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        console.dir(sqeezeResult2);
+                        var stringified = JSON.stringify(sqeezeResult2.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                });
+
+            }
+
+            if (command == 'next') {
+                realPlayer.next(function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        console.dir(sqeezeResult2);
+                        var stringified = JSON.stringify(sqeezeResult2.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                });
+            }
+
+            if (command == 'prev') {
+                realPlayer.previous(function (sqeezeResult) {
+                    console.dir(sqeezeResult);
+
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        console.dir(sqeezeResult2);
+                        var stringified = JSON.stringify(sqeezeResult2.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                });
+            }
+
+
+            //this.sqeezePlayer.getPlaylist(0,10,this.getPlayList);
+
             this.fs.readFile(this.dataFile, (err, data) => {
                 if (err) {
                     console.error(err);
                     process.exit(1);
                 }
-                res.json(JSON.parse(data));
+                //res.json(JSON.parse(data));
             });
         });
+
+
+        this.app.put('/api/comments/:id', (req, res) => {
+            this.fs.readFile(this.dataFile, (err, data) => {
+                if (err) {
+                    console.error(err);
+                    process.exit(1);
+                }
+                let comments = JSON.parse(data);
+                let idIndex = 0;
+                let findCommentById = comments.filter(comment => {
+                    if (comment.id == req.params.id) {
+                        idIndex = comments.indexOf(comment);
+                        return comment;
+                    }
+                });
+                findCommentById[0].text = req.body.text;
+                findCommentById[0].author = req.body.author;
+
+                comments.splice(idIndex, 1, findCommentById[0]);
+                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
+                    if (err) {
+                        console.error(err);
+                        process.exit(1);
+                    }
+                    res.json(comments);
+                });
+            });
+        });
+
         this.app.post('/api/comments', (req, res) => {
             this.fs.readFile(this.dataFile, (err, data) => {
                 if (err) {
@@ -74,22 +239,24 @@ class Server {
                     }
 
                     this.twilioClient.messages.create({
-                      body: `Message from ${req.body.author}. Content: ${req.body.text}`,
-                      to: process.env.TWILIO_TO,
-                      from: process.env.TWILIO_FROM
-                      // mediaUrl: 'http://www.yourserver.com/someimage.png'
-                    }, function(err, data) {
-                      if (err) {
-                        console.error('Could not notify administrator');
-                        console.error(err);
-                      } else {
-                        console.log('Administrator notified');
-                      }
+                        body: `Message from ${req.body.author}. Content: ${req.body.text}`,
+                        to: process.env.TWILIO_TO,
+                        from: process.env.TWILIO_FROM
+                        // mediaUrl: 'http://www.yourserver.com/someimage.png'
+                    }, function (err, data) {
+                        if (err) {
+                            console.error('Could not notify administrator');
+                            console.error(err);
+                        } else {
+                            console.log('Administrator notified');
+                        }
                     });
                     res.json(comments);
                 });
             });
         });
+
+
         this.app.put('/api/comments/:id', (req, res) => {
             this.fs.readFile(this.dataFile, (err, data) => {
                 if (err) {
@@ -99,7 +266,7 @@ class Server {
                 let comments = JSON.parse(data);
                 let idIndex = 0;
                 let findCommentById = comments.filter(comment => {
-                    if(comment.id == req.params.id) {
+                    if (comment.id == req.params.id) {
                         idIndex = comments.indexOf(comment);
                         return comment;
                     }
@@ -108,7 +275,7 @@ class Server {
                 findCommentById[0].author = req.body.author;
 
                 comments.splice(idIndex, 1, findCommentById[0]);
-                 this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function(err) {
+                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
                     if (err) {
                         console.error(err);
                         process.exit(1);
@@ -126,17 +293,17 @@ class Server {
                 let comments = JSON.parse(data);
                 let idIndex = null;
                 let findCommentById = comments.filter(comment => {
-                    if(comment.id == req.params.id) {
+                    if (comment.id == req.params.id) {
                         idIndex = comments.indexOf(comment);
                         return comment;
                     }
                 });
 
-                if(idIndex >= 0){
+                if (idIndex >= 0) {
                     comments.splice(idIndex, 1);
                 }
 
-                 this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function(err) {
+                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
                     if (err) {
                         console.error(err);
                         process.exit(1);
@@ -147,15 +314,15 @@ class Server {
         });
     }
 
-    listen(port){
+    listen(port) {
         this.app.listen(port, () => {
             console.log(`Server started: http://localhost:${port}/`);
         });
     }
 
-    run(){
+    run() {
         this.configureApp();
-        this.configureCORS()
+        this.configureCORS();
         this.configureRoutes();
         this.listen(this.app.get('port'));
     }
