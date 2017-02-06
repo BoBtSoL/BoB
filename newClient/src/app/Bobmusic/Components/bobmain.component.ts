@@ -95,7 +95,6 @@ export class BobMainComponent implements OnChanges, OnInit {
 
     recreatePlaylistForReal(newSongInfo: Songinfo[], forceRecreate: boolean) {
         console.warn('in real recalculation');
-        this.nextToPlay = [];
         let currentoffset = 0;
         let changedLocal: boolean;
 
@@ -122,6 +121,7 @@ export class BobMainComponent implements OnChanges, OnInit {
         }
 
         if (forceRecreate === true || changedLocal === true) {
+            // this.nextToPlay = [];
             if (this.model.playlist_cur_index === 0) {
                 console.warn('Index 0, set lastplayed to null');
                 this.currentplay = newSongInfo.slice(0, 1);

@@ -8,8 +8,9 @@ import { Songinfo } from '../model/songinfo';
     selector: 'playlist-last',
     template: `
 
-  <div class="col-sm-6">
+
     <div class="card">
+        <div class="card-header">Last played</div>
         <div class="card-block">
         <h4 class="card-title">Last played {{comment.title}}</h4>
         <p class="card-text">Last played {{comment.genre}} small card.</p>
@@ -19,7 +20,7 @@ import { Songinfo } from '../model/songinfo';
         </small>
         </div>
     </div>
-  </div>
+
     
 
     `

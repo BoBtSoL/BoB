@@ -12,7 +12,7 @@ import { Songinfo } from '../model/Songinfo';
     <br>
 <div class="card text-center">
 <div class="card-header">
-    Vol.
+    Vol. Slave
   </div>
   <div class="card-block" *ngIf="ready==true">
         <md-slider vertical [max]="max"
@@ -20,9 +20,14 @@ import { Songinfo } from '../model/Songinfo';
         (ngModelChange)="myModel=$event" [ngModel]="myModel"></md-slider>
   </div>
     <div class="card-block" *ngIf="ready==false">
-        <md-slider disabled=true></md-slider>
+        <md-slider vertical disabled=true></md-slider>
   </div>
-</div>
+    <div class="card-footer" *ngIf="ready==true">
+        <small class="text-muted">Player online</small>
+    </div>
+    <div class="card-footer" *ngIf="ready==false">
+        <small class="text-muted">Player offline</small>
+    </div>
 
 
     `,
@@ -56,34 +61,24 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     }
 
     onSliderChange() {
-        console.warn('changed om sliderchange!');
+        // console.warn('changed om sliderchange!');
     }
 
     setValuesCorrect() {
         if (this.playerStatus != null) {
             this.value = this.playerStatus.mixer_volume;
-            this.myModel =this.playerStatus.mixer_volume;
+            this.myModel = this.playerStatus.mixer_volume;
             console.warn('set value!');
-            this.ready=true;
+            this.ready = true;
         }
     }
 
     ngOnInit() {
-        if (this.isMaster === true) {
-            this.musicService.getMasterPlayer().then(playerStatus => { this.playerStatus = playerStatus; this.setValuesCorrect(); });
-        } else {
-            //this.musicService.getSlave().then(serverstatus => this.model = serverstatus);
-        }
-
-
-        // this.musicService.startPlay().then(serverrespone => this.serverrespone = serverrespone);
-
-        // Load comments
-        // this.submitMusic();
+        this.musicService.getSlavePlayer().then(playerStatus => { this.playerStatus = playerStatus; this.setValuesCorrect(); });
     }
 
     ngOnChanges() {
-        console.warn('changed!');
+        // nix
     }
 
 

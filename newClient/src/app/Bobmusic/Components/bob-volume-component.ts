@@ -12,7 +12,7 @@ import { Songinfo } from '../model/Songinfo';
     <br>
 <div class="card text-center">
 <div class="card-header">
-    Vol.
+    Vol. Master
   </div>
   <div class="card-block" *ngIf="ready==true">
         <md-slider vertical [max]="max"
@@ -20,8 +20,14 @@ import { Songinfo } from '../model/Songinfo';
         (ngModelChange)="myModel=$event" [ngModel]="myModel"></md-slider>
   </div>
     <div class="card-block" *ngIf="ready==false">
-        <md-slider disabled=true></md-slider>
+        <md-slider vertical disabled=true></md-slider>
   </div>
+      <div class="card-footer" *ngIf="ready==true">
+        <small class="text-muted">Player online</small>
+    </div>
+    <div class="card-footer" *ngIf="ready==false">
+        <small class="text-muted">Player offline</small>
+    </div>
 </div>
 
 
@@ -71,7 +77,7 @@ export class BobVolumeControl implements OnInit, OnChanges {
     ngOnInit() {
         if (this.isMaster === true) {
             this.musicService.getMasterPlayer().then(playerStatus => {
-                this.playerStatus = playerStatus; 
+                this.playerStatus = playerStatus;
                 this.setValuesCorrect(playerStatus);
             });
         }

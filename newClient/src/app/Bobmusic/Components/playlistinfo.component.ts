@@ -8,7 +8,7 @@ import { Songinfo } from '../model/songinfo';
     selector: 'playlist-box',
     template: `
 
-  <div class="col-sm-6">
+
     <div class="card">
         <div class="card-block">
         <h4 class="card-title">{{comment.title}}</h4>
@@ -19,7 +19,7 @@ import { Songinfo } from '../model/songinfo';
         </small>
         </div>
     </div>
-  </div>
+
     
 
     `
