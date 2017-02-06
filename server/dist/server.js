@@ -84,9 +84,29 @@ var Server = function () {
             return realPlayer;
         }
     }, {
+        key: 'getSlavePlayer',
+        value: function getSlavePlayer() {
+            var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            return realPlayer;
+        }
+    }, {
+        key: 'formatResultForPlayer',
+        value: function formatResultForPlayer(player) {
+            var stringified = JSON.stringify(player);
+            if (stringified != null) {
+                stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+            }
+            return stringified;
+        }
+    }, {
         key: 'configureRoutes',
         value: function configureRoutes() {
             var _this = this;
+
+            var outerThis = this;
 
             this.app.get('/api/music/status', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
@@ -104,17 +124,37 @@ var Server = function () {
                 //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
             });
 
+            this.app.get('/api/music/get/masterplayer', function (req, res) {
+
+                var realPlayer = _this.getMasterPlayer();
+                var funcFormat = _this.formatResultForPlayer;
+
+                realPlayer.getStatus(function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
+            this.app.get('/api/music/get/slaveplayer', function (req, res) {
+
+                var realPlayer = _this.getSlavePlayer();
+                realPlayer.getStatus(function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
             this.app.get('/api/music/playlist', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
 
                 realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
                     console.dir(sqeezeResult);
                     var stringified = JSON.stringify(sqeezeResult.result);
-                    stringified = stringified.replace(/playlist index/g, 'playlist_index');
-                    res.json(JSON.parse(stringified));
+                    if (stringified != null) {
+                        stringified = stringified.replace(/playlist index/g, 'playlist_index');
+                        res.json(JSON.parse(stringified));
+                    }
                 });
-
-                //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
             });
 
             this.app.get('/api/music/command/:cmdid', function (req, res) {
@@ -127,31 +167,16 @@ var Server = function () {
 
                 if (command == 'playrandom') {
                     realPlayer.playRandom('tracks', function (sqeezeResult) {
-                        console.dir(sqeezeResult);
-
-                        realPlayer.getStatus(function (sqeezeResult2) {
-                            console.dir(sqeezeResult2);
-                            var stringified = JSON.stringify(sqeezeResult2.result);
-                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
-                            res.json(JSON.parse(stringified));
-                        });
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
                     });
                 }
 
                 if (command == 'play') {
                     realPlayer.play(function (sqeezeResult) {
-                        console.dir(sqeezeResult);
-
+                        // Warum auch immer - bekloppt... hier wird falsches objekt zurückgegeben. Daher status neu holen
                         realPlayer.getStatus(function (sqeezeResult2) {
-                            console.dir(sqeezeResult2);
-                            var stringified = JSON.stringify(sqeezeResult2.result);
-                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                            var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
                             res.json(JSON.parse(stringified));
                         });
                     });
@@ -159,49 +184,22 @@ var Server = function () {
 
                 if (command == 'pause') {
                     realPlayer.pause(function (sqeezeResult) {
-                        console.dir(sqeezeResult);
-
-                        realPlayer.getStatus(function (sqeezeResult2) {
-                            console.dir(sqeezeResult2);
-                            var stringified = JSON.stringify(sqeezeResult2.result);
-                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
-                            res.json(JSON.parse(stringified));
-                        });
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
                     });
                 }
 
                 if (command == 'next') {
                     realPlayer.next(function (sqeezeResult) {
-                        console.dir(sqeezeResult);
-
-                        realPlayer.getStatus(function (sqeezeResult2) {
-                            console.dir(sqeezeResult2);
-                            var stringified = JSON.stringify(sqeezeResult2.result);
-                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
-                            res.json(JSON.parse(stringified));
-                        });
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
                     });
                 }
 
                 if (command == 'prev') {
                     realPlayer.previous(function (sqeezeResult) {
-                        console.dir(sqeezeResult);
-
-                        realPlayer.getStatus(function (sqeezeResult2) {
-                            console.dir(sqeezeResult2);
-                            var stringified = JSON.stringify(sqeezeResult2.result);
-                            stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                            stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                            stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                            stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
-                            res.json(JSON.parse(stringified));
-                        });
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
                     });
                 }
 
@@ -213,6 +211,26 @@ var Server = function () {
                         process.exit(1);
                     }
                     //res.json(JSON.parse(data));
+                });
+            });
+
+            this.app.get('/api/music/set/masterplayer/volume/:cmdid', function (req, res) {
+                var command = req.params.cmdid;
+                var realPlayer = _this.getMasterPlayer();
+
+                realPlayer.setVolume(command, function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
+            this.app.get('/api/music/set/slaveplayer/volume/:cmdid', function (req, res) {
+                var command = req.params.cmdid;
+                var realPlayer = _this.getSlavePlayer();
+
+                realPlayer.setVolume(command, function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
                 });
             });
 

@@ -75,10 +75,6 @@ export class InfoFormComponent implements OnChanges, OnInit {
         }
     }
 
-    play() {
-        this.musicService.startPlay().then(serverstatus => this.model = serverstatus);
-    }
-
     next() {
         this.musicService.next().then(serverstatus => this.model = serverstatus);
     }

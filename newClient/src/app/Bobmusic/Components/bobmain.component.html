@@ -1,0 +1,36 @@
+<br>
+<div class="col-sm-12">
+    <div class="card">
+        <div class="card-header">
+            Currently playing
+        </div>
+        <div class="card-block">
+            <h4 class="card-title">Artist: {{model?.mode}}</h4>
+            <p class="card-text">Songtitle</p>
+
+            <div class="card-footer text-center">
+                <button md-icon-button (click)="prev()"><md-icon>fast_rewind</md-icon></button>
+                <button *ngIf="isPlaying()==false" (click)="play()" md-icon-button><md-icon>play_arrow</md-icon></button>
+                <button *ngIf="isPlaying()==true" (click)="pause()" md-icon-button><md-icon class="material-icons">pause</md-icon></button>
+                <button md-icon-button (click)="next()"><md-icon class="material-icons">fast_forward</md-icon></button>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <div *ngIf="isOnline()==true">
+        <h4>Playlist oder so...</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <playlist-last *ngFor="let comment of lastPlayed" [comment]="comment"></playlist-last>
+                <playlist-current *ngFor="let comment of currentplay" [comment]="comment"></playlist-current>
+                <playlist-box *ngFor="let comment of nextToPlay" [comment]="comment"></playlist-box>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="isOnline()==false">
+        <h1>Server offline oder IP ist banane!</h1>
+    </div>
