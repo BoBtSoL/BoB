@@ -12,15 +12,10 @@ import { Songinfo } from '../model/songinfo';
     <div class="card">
         <div class="card-header">Last played</div>
         <div class="card-block">
-        <h4 class="card-title">Last played {{comment.title}}</h4>
-        <p class="card-text">Last played {{comment.genre}} small card.</p>
-        </div>
-        <div class="card-footer">
-        <small class="text-muted">Last updated 3 mins ago
-        </small>
+        <p class="card-text">{{comment.artist}} - {{comment.title}}</p>
         </div>
     </div>
-
+    <br>
     
 
     `

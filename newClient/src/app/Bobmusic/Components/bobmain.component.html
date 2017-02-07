@@ -6,11 +6,14 @@
     <div *ngIf="isOnline()==true">
         <div class="row">
             <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">Currently playing</div>
+                <div *ngIf="currentplay_single" class="card">
+                    <div class="card-header">Playing:</div>
                     <div class="card-block">
-                        <h4 class="card-title">Artist: {{model?.mode}}</h4>
-                        <p class="card-text">Songtitle</p>
+                        <h4 class="card-title"> {{currentplay_single.title}}</h4>
+                        <p class="card-text">{{currentplay_single?.artist}} </p>
+                        <p class="card-text">
+                           <md-progress-bar mode="buffer" value="{{progress}}" bufferValue="100"></md-progress-bar>
+                            </p>
                     </div>
                     <div class="card-footer text-center">
                             <button md-icon-button (click)="prev()"><md-icon>fast_rewind</md-icon></button>

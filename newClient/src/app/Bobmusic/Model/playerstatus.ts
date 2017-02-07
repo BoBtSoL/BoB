@@ -12,5 +12,6 @@ export class Playerstatus {
         player_ip: string;
         playlist_repeat: number;
         playlist_cur_index: number;
+        time: string;
 
 }

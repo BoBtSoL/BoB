@@ -224,6 +224,16 @@ var Server = function () {
                 });
             });
 
+            this.app.get('/api/music/set/masterplayer/play/:playlistId', function (req, res) {
+                var command = req.params.playlistId;
+                var realPlayer = _this.getMasterPlayer();
+
+                realPlayer.playIndex(command, function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
             this.app.get('/api/music/set/slaveplayer/volume/:cmdid', function (req, res) {
                 var command = req.params.cmdid;
                 var realPlayer = _this.getSlavePlayer();

@@ -193,6 +193,16 @@ class Server {
             });
         });
 
+        this.app.get('/api/music/set/masterplayer/play/:playlistId', (req, res) => {
+            var command = req.params.playlistId;
+            var realPlayer = this.getMasterPlayer();
+
+            realPlayer.playIndex(command, function (sqeezeResult) {
+                var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+        });
+
         this.app.get('/api/music/set/slaveplayer/volume/:cmdid', (req, res) => {
             var command = req.params.cmdid;
             var realPlayer = this.getSlavePlayer();

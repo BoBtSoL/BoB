@@ -24,6 +24,7 @@ export class MusicService {
     private masterPlayerUrl = this.baseUrl + '/api/music/get/masterplayer';
     private slavePlayerUrl = this.baseUrl + '/api/music/get/slaveplayer';
     private masterPlayerSetVolumeUrl = this.baseUrl + '/api/music/set/masterplayer/volume/';
+    private masterPlayerPlayPlaylistId = this.baseUrl + '/api/music/set/masterplayer/play/';
     private slavePlayerSetVolumeUrl = this.baseUrl + '/api/music/set/slaveplayer/volume/';
     // Resolve HTTP using the constructor
     constructor(private http: Http) { }
@@ -101,6 +102,12 @@ export class MusicService {
 
     setMasterPlayerVolume(volume): Promise<Playerstatus> {
         return this.http.get(this.masterPlayerSetVolumeUrl + volume).toPromise()
+            .then(response => response.json() as Playerstatus)
+            .catch(this.handleError);
+    }
+
+    setMasterPlayerPlayPlaylistId(id): Promise<Playerstatus> {
+        return this.http.get(this.masterPlayerPlayPlaylistId + id).toPromise()
             .then(response => response.json() as Playerstatus)
             .catch(this.handleError);
     }

@@ -9,16 +9,15 @@ import { Songinfo } from '../model/songinfo';
     template: `
 
 
-    <div class="card">
+    <div class="card card-inverse" style="background-color: #2b2b2b; border-color: #333;">
+        <div class="card-header">Currently playiing</div>
         <div class="card-block">
-        <h4 class="card-title">Current played {{comment.title}}</h4>
-        <p class="card-text">Current played {{comment.genre}} small card.</p>
+        <!--<h4 class="card-title">{{comment.title}}</h4>-->
+        <p class="card-text">{{comment.artist}} - {{comment.title}}</p>
         </div>
-        <div class="card-footer">
-        <small class="text-muted">Last updated 3 mins ago
-        </small>
-        </div>
+
     </div>
+    <br>
 
     
 

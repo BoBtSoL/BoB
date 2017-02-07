@@ -11,6 +11,7 @@ import { BobVolumeControl } from './Components/bob-volume-component';
 import { BobVolumeSlaveControl } from './Components/bob-volume-slave-component';
 import { PlayListLastPlayed } from './Components/playlist-lastplayed.component';
 import { PlaylistCurrentPlayed } from './Components/playlist-currentplayed.components';
+import {BobSettingsComponent} from './Components/bob-settings-component';
 
 import { MusicService } from './services/music.service';
 
@@ -30,7 +31,8 @@ import { MusicService } from './services/music.service';
     BobVolumeControl,
     BobVolumeSlaveControl,
     PlayListLastPlayed,
-    PlaylistCurrentPlayed
+    PlaylistCurrentPlayed,
+    BobSettingsComponent
   ],
 
   providers: [
@@ -44,7 +46,8 @@ import { MusicService } from './services/music.service';
     BobVolumeControl,
     BobVolumeSlaveControl,
     PlayListLastPlayed,
-    PlaylistCurrentPlayed
+    PlaylistCurrentPlayed,
+    BobSettingsComponent
   ]
 
 })

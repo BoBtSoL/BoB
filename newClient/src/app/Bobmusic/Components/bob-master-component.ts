@@ -18,7 +18,7 @@ import { Component } from '@angular/core';
                                  <div class="col-sm-2 col-md-2"><bob-volume-slave-component [isMaster]=false></bob-volume-slave-component></div>
                               </div>
                         </md-tab>
-                     <md-tab label="Settings"> bald...</md-tab>
+                     <md-tab label="Settings"> <bob-settings-component></bob-settings-component></md-tab>
                    </md-tab-group>
                 </div>
                 <div class="col-sm-1 col-md-1">
