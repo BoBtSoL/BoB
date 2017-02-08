@@ -9,25 +9,25 @@ import { Songinfo } from '../model/Songinfo';
 @Component({
     selector: 'bob-volume-slave-component',
     template: `
-    <br>
-<div class="card text-center">
-<div class="card-header">
-    Vol. Slave
-  </div>
-  <div class="card-block" *ngIf="ready==true">
-        <md-slider vertical [max]="max"
-        [min]="min" step="2" value="value" (change)="clicked(event)" (onSliderChange)=clicked(event) 
-        (ngModelChange)="myModel=$event" [ngModel]="myModel"></md-slider>
-  </div>
-    <div class="card-block" *ngIf="ready==false">
-        <md-slider vertical disabled=true></md-slider>
-  </div>
-    <div class="card-footer" *ngIf="ready==true">
-        <small class="text-muted">Player online</small>
-    </div>
-    <div class="card-footer" *ngIf="ready==false">
-        <small class="text-muted">Player offline</small>
-    </div>
+            <br>
+        <div class="card text-center">
+        <div class="card-header">
+            Vol. Slave
+        </div>
+        <div class="card-block" *ngIf="ready==true">
+                <md-slider vertical [max]="max"
+                [min]="min" step="2" value="value" (change)="clicked(event)" (onSliderChange)=clicked(event) 
+                (ngModelChange)="myModel=$event" [ngModel]="myModel"></md-slider>
+        </div>
+            <div class="card-block" *ngIf="ready==false">
+                <md-slider vertical disabled=true></md-slider>
+        </div>
+            <div class="card-footer" *ngIf="ready==true">
+                <small class="text-muted">Player online</small>
+            </div>
+            <div class="card-footer" *ngIf="ready==false">
+                <small class="text-muted">Player offline</small>
+            </div>
 
 
     `,

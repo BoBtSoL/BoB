@@ -22,8 +22,24 @@
                             <button md-icon-button (click)="next()"><md-icon class="material-icons">fast_forward</md-icon></button>
                      </div>
                 </div> 
+                <div *ngIf="currentplay_single==null" class="card">
+                    <div class="card-header">Not playing</div>
+                    <div class="card-block">
+                        <h4 class="card-title"> </h4>
+                        <p class="card-text">offline</p>
+                        <p class="card-text">
+                           <md-progress-bar mode="buffer" value="{{progress}}" bufferValue="100"></md-progress-bar>
+                            </p>
+                    </div>
+                    <div class="card-footer text-center">
+                            <button md-icon-button (click)="prev()"><md-icon>fast_rewind</md-icon></button>
+                            <button *ngIf="isPlaying()==false" (click)="play()" md-icon-button><md-icon>play_arrow</md-icon></button>
+                            <button *ngIf="isPlaying()==true" (click)="pause()" md-icon-button><md-icon class="material-icons">pause</md-icon></button>
+                            <button md-icon-button (click)="next()"><md-icon class="material-icons">fast_forward</md-icon></button>
+                     </div>
+                </div> 
                 <br>
-                <br>
+                
 
 
                 <playlist-last *ngFor="let comment of lastPlayed" [comment]="comment"></playlist-last>

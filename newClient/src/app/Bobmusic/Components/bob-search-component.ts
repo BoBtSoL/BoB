@@ -5,9 +5,10 @@ import { MusicService } from '../services/music.service';
 import { Playerstatus } from '../model/playerstatus';
 import { Songinfo } from '../model/songinfo';
 import { Serveronline } from '../model/serveronline';
+import { SongSearchResult } from '../Model/songs-search-result';
 
 @Component({
-    selector: 'bob-settings-component',
+    selector: 'bob-search-component',
     template: `
     <br>
 
@@ -15,15 +16,15 @@ import { Serveronline } from '../model/serveronline';
  <div class="col-sm-12">
     <md-card>
     <md-card-header>
-        <md-card-title>Server Settings</md-card-title>
+        <md-card-title>Suche</md-card-title>
     </md-card-header>
     <md-card-content>
             <md-input-container>
-            <input md-input placeholder="Server IP" [(ngModel)]="serverIp">
+            <input md-input placeholder="Band:" [(ngModel)]="band">
             </md-input-container>
 
             <md-input-container>
-            <input md-input placeholder="Server Port" [(ngModel)]="serverPort">
+            <input md-input placeholder="Titel:" [(ngModel)]="titel">
             </md-input-container>
             
             <div *ngIf="status==2">
@@ -32,43 +33,36 @@ import { Serveronline } from '../model/serveronline';
             <div *ngIf="status==1">
             <p> <i class="material-icons">done</i>
             Test erfolgreich</p></div>
+
+            <h4>total: {{searchResult?.count}} </h4>
             
     </md-card-content>
     <md-card-actions>
-        <button md-button (click)="onTestConfig()">TEST</button>
-        <button md-button>SAVE</button>
+        <button md-button (click)="onSearch()">Suchen</button>
     </md-card-actions>
 
     </md-card>
 <br>
 
- <md-card>
-    <md-card-header>
-        <md-card-title>Randomplay</md-card-title>
-    </md-card-header>
-    <md-card-content>
-           <p>Zufallsmix starten</p>
-           <p>Startet einen mix mit allem</p>
-    </md-card-content>
-    <md-card-actions>
-        <button md-button (click)="startRandomPlay()">START</button>
-    </md-card-actions>
-    </md-card>
-    <br>
+
+    <resulinfo-component *ngFor="let comment of resultListSplit" [comment]="comment"></resulinfo-component>
 
 </div>
 
     `,
     providers: [MusicService]
 })
-export class BobSettingsComponent implements OnInit, OnChanges {
+export class BobSearchComponent implements OnInit, OnChanges {
 
-    serverIp: string;
-    serverPort: number;
+    band: string;
+    titel: string;
+    searchResult: SongSearchResult;
 
     status: number;
 
     serverRespone: Serveronline;
+
+    resultListSplit: Songinfo[];
 
     constructor(
         private musicService: MusicService
@@ -80,29 +74,32 @@ export class BobSettingsComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         this.status = 0;
-        this.serverIp = this.musicService.baseServerUrl;
-        this.serverPort = this.musicService.baseServerPort;
     }
 
     ngOnChanges() {
         //
     }
 
-    onTestConfig() {
-        this.musicService.testUrl(this.serverIp, this.serverPort).then(resp => {
-            this.serverRespone = resp; this.callSuccess();
-        })
-            .catch(res => this.callError(res));
+    onSearch() {
+        this.musicService.performeSongSearch(this.titel).then(result => {
+            this.searchResult = result;
+            this.showResults();
+        });
+
     }
 
-    onSave() {
-        this.musicService.setBaseUrl(this.serverIp, this.serverPort);
+    showResults() {
+        if (this.searchResult == null) {
+            console.warn('war wohl nix!');
+        } else {
+            console.warn('wuhu, found ' + this.searchResult.count);
+            this.resultListSplit = this.searchResult.titles_loop;
+        }
     }
 
     callError(reason) {
         console.warn('war wohl nix' + reason);
         this.status = 2;
-
     }
 
     callSuccess() {

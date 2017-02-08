@@ -69,8 +69,19 @@ class Server {
     configureRoutes() {
         var outerThis = this;
 
+        this.app.get('/api/server/status', (req, res) => {
+            var realPlayer = this.getMasterPlayer();
+
+            var ok = { "online": "true" };
+            var stringified = JSON.stringify(ok);
+            res.json(JSON.parse(stringified));
+        });
+
         this.app.get('/api/music/status', (req, res) => {
             var realPlayer = this.getMasterPlayer();
+
+            //hackhac
+
 
             realPlayer.getStatus(function (sqeezeResult) {
                 console.dir(sqeezeResult);
@@ -183,6 +194,40 @@ class Server {
             });
         });
 
+
+        this.app.get('/api/music/search/artist/:cmdid', (req, res) => {
+            var command = req.params.cmdid;
+            this.squeeze.request("", ["artists", 0, 1, "search:" + command], function (sqeezeResult) {
+                var stringified = JSON.stringify(sqeezeResult.result);
+                //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
+        });
+
+        this.app.get('/api/music/search/song/:cmdid', (req, res) => {
+            var command = req.params.cmdid;
+            this.squeeze.request("", ["songs", 0, 10, "search:" + command + ""], function (sqeezeResult) {
+                var stringified = JSON.stringify(sqeezeResult.result);
+                //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
+        });
+
+        this.app.get('/api/music/search/detai/song/:from/:to/:query', (req, res) => {
+            var from = req.params.from;
+            var to = req.params.to;
+            var query = req.params.query;
+            this.squeeze.request("", ["songs", from, to, "search:" + query + ""], function (sqeezeResult) {
+                var stringified = JSON.stringify(sqeezeResult.result);
+                //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
+        });
+
+
         this.app.get('/api/music/set/masterplayer/volume/:cmdid', (req, res) => {
             var command = req.params.cmdid;
             var realPlayer = this.getMasterPlayer();
@@ -201,6 +246,28 @@ class Server {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
             });
+        });
+
+        this.app.get('/api/music/set/masterplayer/addtoplaylist/:trackid', (req, res) => {
+            var trackid = req.params.trackid;
+            var realPlayer = this.getMasterPlayer();
+
+            this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
+                var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
+        });
+
+        this.app.get('/api/music/set/masterplayer/startenow/:trackid', (req, res) => {
+            var trackid = req.params.trackid;
+            var realPlayer = this.getMasterPlayer();
+
+            this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
+                var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
         });
 
         this.app.get('/api/music/set/slaveplayer/volume/:cmdid', (req, res) => {
