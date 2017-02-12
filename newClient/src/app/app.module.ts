@@ -7,6 +7,7 @@ import { BobMusicModule } from './Bobmusic/bobmusic.module';
 import 'hammerjs';
 
 import { AppComponent } from './app.component';
+import { EmitterService } from './emitter.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,7 @@ import { AppComponent } from './app.component';
     MaterialModule.forRoot(),
     BobMusicModule
   ],
-  providers: [],
+  providers: [EmitterService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,9 +1,9 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
-import { Playerstatus } from '../model/playerstatus';
-import { Songinfo } from '../model/Songinfo';
+import { Playerstatus } from '../Model/playerstatus';
+import { Songinfo } from '../Model/songinfo';
 
 
 @Component({
@@ -47,7 +47,6 @@ export class BobVolumeControl implements OnInit, OnChanges {
     playerStatus: Playerstatus;
 
     clicked(event) {
-        console.warn('wow. Clicked fired ' + this.myModel);
         this.musicService.setMasterPlayerVolume(this.myModel);
     }
 

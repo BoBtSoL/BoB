@@ -1,8 +1,8 @@
 // Imports
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Songinfo } from '../model/songinfo';
+import { Songinfo } from '../Model/songinfo';
 
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
 // Component decorator
 @Component({
@@ -10,19 +10,15 @@ import { MusicService } from '../services/music.service';
     template: `
 
 
-    <div class="card">
-        <!--<div class="card-header">Next</div>-->
-        <div class="card-block">
-        <p class="card-text">{{comment.artist}} - {{comment.title}}</p>
+<div class="card">
+  <div class="card-block">
+        <p class="card-text">
+          
+          <button md-icon-button (click)="play()"><md-icon class="material-icons">play_arrow</md-icon> </button> 
+          {{comment.artist}} - {{comment.title}}
+        </p> 
         </div>
-        
-        
-        <div class="card-footer text-center">
-            <button (click)="play()" md-icon-button><md-icon class="material-icons">play_arrow</md-icon></button>
-        </div>
-    </div>
-    <br>
-    
+</div>   
 
     `
     // No providers here because they are passed down from the parent component

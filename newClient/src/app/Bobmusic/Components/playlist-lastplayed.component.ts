@@ -1,21 +1,23 @@
 // Imports
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Songinfo } from '../model/songinfo';
+import { Songinfo } from '../Model/songinfo';
 
+import { MusicService } from '../Services/music.service';
 
 // Component decorator
 @Component({
     selector: 'playlist-last',
     template: `
 
-
-    <div class="card">
-        <div class="card-header">Last played</div>
-        <div class="card-block">
-        <p class="card-text">{{comment.artist}} - {{comment.title}}</p>
+<div class="card">
+  <div class="card-block">
+        <p class="card-text">
+         
+          <button md-icon-button (click)="play()"><md-icon class="material-icons">play_arrow</md-icon> </button> 
+          {{comment.artist}} - {{comment.title}}
+        </p> 
         </div>
-    </div>
-    <br>
+</div>
     
 
     `
@@ -28,9 +30,13 @@ export class PlayListLastPlayed {
     @Input() comment: Songinfo;
     @Input() listId: string;
 
-    // Constructor
     constructor(
+        private musicService: MusicService
     ) { }
 
+
+    play() {
+        this.musicService.setMasterPlayerPlayPlaylistId(this.comment.playlist_index);
+    }
 
 }

@@ -1,8 +1,8 @@
 // Imports
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Songinfo } from '../model/songinfo';
+import { Songinfo } from '../Model/songinfo';
 
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
 // Component decorator
 @Component({
@@ -10,25 +10,23 @@ import { MusicService } from '../services/music.service';
     template: `
 
 
-    <md-card>
-        <md-card-header>
-            <md-card-title>Ergebnis</md-card-title>
-        </md-card-header>
-        <md-card-content>
-                <p>{{comment.artist}}</p>
-                <p>{{comment.title}}<p>
-        </md-card-content>
-        <md-card-actions>
-            <button md-button (click)="playNow()">PLAY NOW</button>
+<div class="card">
+    <div class="card-block">
+        <p class="card-text">
+            {{comment.artist}} - {{comment.title}}
+        </p>
+    </div>
+    <div class="card-footer">
+                <button md-button (click)="playNow()">PLAY NOW</button>
             <button md-button (click)="addToPlaylist()">ADD</button>
-        </md-card-actions>
+     <!--<small class="text-muted">Player online</small>-->
+    </div>
+</div>
 
-        </md-card>
+
     <br>
     
-
-    `
-    // No providers here because they are passed down from the parent component
+   `
 })
 // Component class
 export class ResultInfoComponent {

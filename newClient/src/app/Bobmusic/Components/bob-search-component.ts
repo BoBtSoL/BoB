@@ -1,55 +1,15 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
-import { Playerstatus } from '../model/playerstatus';
-import { Songinfo } from '../model/songinfo';
-import { Serveronline } from '../model/serveronline';
+import { Playerstatus } from '../Model/playerstatus';
+import { Songinfo } from '../Model/songinfo';
+import { Serveronline } from '../Model/serveronline';
 import { SongSearchResult } from '../Model/songs-search-result';
 
 @Component({
     selector: 'bob-search-component',
-    template: `
-    <br>
-
-
- <div class="col-sm-12">
-    <md-card>
-    <md-card-header>
-        <md-card-title>Suche</md-card-title>
-    </md-card-header>
-    <md-card-content>
-            <md-input-container>
-            <input md-input placeholder="Band:" [(ngModel)]="band">
-            </md-input-container>
-
-            <md-input-container>
-            <input md-input placeholder="Titel:" [(ngModel)]="titel">
-            </md-input-container>
-            
-            <div *ngIf="status==2">
-                <p><i class="material-icons">warning</i>
-                Test nicht erfolgreich</p></div>
-            <div *ngIf="status==1">
-            <p> <i class="material-icons">done</i>
-            Test erfolgreich</p></div>
-
-            <h4>total: {{searchResult?.count}} </h4>
-            
-    </md-card-content>
-    <md-card-actions>
-        <button md-button (click)="onSearch()">Suchen</button>
-    </md-card-actions>
-
-    </md-card>
-<br>
-
-
-    <resulinfo-component *ngFor="let comment of resultListSplit" [comment]="comment"></resulinfo-component>
-
-</div>
-
-    `,
+    templateUrl: './bob-search-component.html',
     providers: [MusicService]
 })
 export class BobSearchComponent implements OnInit, OnChanges {

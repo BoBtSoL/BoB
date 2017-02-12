@@ -1,4 +1,4 @@
-/* * * ./app/comments/model/comment.ts * * */
+/* * * ./app/comments/Model/comment.ts * * */
 export class Comment {
 
         playlist_index: number;

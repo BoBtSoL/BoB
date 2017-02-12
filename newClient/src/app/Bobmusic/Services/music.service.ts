@@ -138,13 +138,13 @@ export class MusicService {
     }
 
     getSlavePlayer(): Promise<Playerstatus> {
-        return this.http.get(this.masterPlayerUrl).toPromise()
+        return this.http.get(this.slavePlayerUrl).toPromise()
             .then(response => response.json() as Playerstatus)
             .catch(this.handleError);
     }
 
     setSlavePlayerVolume(volume): Promise<Playerstatus> {
-        return this.http.get(this.masterPlayerSetVolumeUrl + volume).toPromise()
+        return this.http.get(this.slavePlayerSetVolumeUrl + volume).toPromise()
             .then(response => response.json() as Playerstatus)
             .catch(this.handleError);
     }

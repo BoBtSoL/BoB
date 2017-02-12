@@ -15,7 +15,7 @@ import { BobSettingsComponent } from './Components/bob-settings-component';
 import { BobSearchComponent } from './Components/bob-search-component';
 import { ResultInfoComponent } from './Components/resultinfo.component';
 
-import { MusicService } from './services/music.service';
+import { MusicService } from './Services/music.service';
 
 
 @NgModule({

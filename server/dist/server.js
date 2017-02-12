@@ -42,9 +42,11 @@ var Server = function () {
 
         this.app = (0, _express2.default)();
         this.fs = _fs2.default;
-        this.squeeze = new _squeezenode2.default('http://localhost', 9000);
+        //this.squeeze = new SqueezeServer('http://localhost', 9000);
+        this.squeeze = new _squeezenode2.default('http://192.168.42.1', 9000);
         //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
         this.dataFile = _path2.default.join(__dirname, '../data.json');
+        this.configreMasterAndSlave(this);
     }
 
     _createClass(Server, [{
@@ -78,15 +80,63 @@ var Server = function () {
             return reply.result[0];
         }
     }, {
+        key: 'configreMasterAndSlave',
+        value: function configreMasterAndSlave(outerthis) {
+
+            this.squeeze.getPlayers(function (sqeezeResult) {
+                console.info(sqeezeResult);
+                if (sqeezeResult != null && (sqeezeResult.ok == 'true' || sqeezeResult.ok == true)) {
+                    // Antwort sinnvoll
+                    var arrayLength = sqeezeResult.result.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        if (sqeezeResult.result[i].name == 'raspberrypi') {
+                            outerthis.masterplayerid = sqeezeResult.result[i].playerid;
+                        }
+                        if (sqeezeResult.result[i].name == 'Beere_2') {
+                            outerthis.slaveplayerId = sqeezeResult.result[i].playerid;;
+                        }
+                    }
+                }
+            });
+        }
+    }, {
         key: 'getMasterPlayer',
         value: function getMasterPlayer() {
-            var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+
+            var realPlayer;
+            if (this.masterplayerid == null) {
+                realPlayer = this.squeeze.players['00:00:00:00:00:00'];
+                if (realPlayer == undefined) {
+                    console.warn('scheisse');
+                    //realPlayer = this.squeeze.players['00:00:00:00:00:00'];
+                }
+            } else {
+                realPlayer = this.squeeze.players[this.masterplayerid];
+            }
+
+            //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            //var realPlayer = this.squeeze.players['00:00:00:00:00:00'];
+
+            //if (realPlayer == undefined) {
+
+            //}
+
             return realPlayer;
         }
     }, {
         key: 'getSlavePlayer',
         value: function getSlavePlayer() {
-            var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+            //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
+
+            var realPlayer;
+
+            if (this.slaveplayerId == null) {
+                realPlayer = this.squeeze.players['f4:f2:6d:0e:c2:a1'];
+            } else {
+                realPlayer = this.squeeze.players[this.slaveplayerId];
+            }
+
+            //var realPlayer = this.squeeze.players['f4:f2:6d:0e:c2:a1'];
             return realPlayer;
         }
     }, {
@@ -121,16 +171,19 @@ var Server = function () {
 
                 //hackhac
 
-
-                realPlayer.getStatus(function (sqeezeResult) {
-                    console.dir(sqeezeResult);
-                    var stringified = JSON.stringify(sqeezeResult.result);
-                    stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                    stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                    stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                    stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
-                    res.json(JSON.parse(stringified));
-                });
+                if (realPlayer == null) {
+                    // doof
+                } else {
+                    realPlayer.getStatus(function (sqeezeResult) {
+                        console.dir(sqeezeResult);
+                        var stringified = JSON.stringify(sqeezeResult.result);
+                        stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
+                        stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
+                        stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
+                        stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
+                        res.json(JSON.parse(stringified));
+                    });
+                }
 
                 //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
             });
@@ -149,10 +202,14 @@ var Server = function () {
             this.app.get('/api/music/get/slaveplayer', function (req, res) {
 
                 var realPlayer = _this.getSlavePlayer();
-                realPlayer.getStatus(function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
-                });
+                if (realPlayer == null) {
+                    //doof
+                } else {
+                    realPlayer.getStatus(function (sqeezeResult) {
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
+                    });
+                }
             });
 
             this.app.get('/api/music/playlist', function (req, res) {
@@ -236,7 +293,7 @@ var Server = function () {
 
             this.app.get('/api/music/search/song/:cmdid', function (req, res) {
                 var command = req.params.cmdid;
-                _this.squeeze.request("", ["songs", 0, 10, "search:" + command + ""], function (sqeezeResult) {
+                _this.squeeze.request("", ["songs", 0, 100, "search:" + command + ""], function (sqeezeResult) {
                     var stringified = JSON.stringify(sqeezeResult.result);
                     //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));

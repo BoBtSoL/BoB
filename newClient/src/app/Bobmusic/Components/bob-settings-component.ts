@@ -1,23 +1,35 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
-import { Playerstatus } from '../model/playerstatus';
-import { Songinfo } from '../model/songinfo';
-import { Serveronline } from '../model/serveronline';
+import { Playerstatus } from '../Model/playerstatus';
+import { Songinfo } from '../Model/songinfo';
+import { Serveronline } from '../Model/serveronline';
 
 @Component({
     selector: 'bob-settings-component',
     template: `
     <br>
+     <div class="col-sm-12">
 
+        <div class="card">
+            <div class="card-header">Zufallsmix:</div>
+            <div class="card-block">
+                <p class="card-text">
+                Zufallsmix starten
+                </p>
+            </div>
+            <div class="card-footer">
+                <button md-button (click)="startRandomPlay()">Alles</button>
+            </div>
+        </div>
 
- <div class="col-sm-12">
-    <md-card>
-    <md-card-header>
-        <md-card-title>Server Settings</md-card-title>
-    </md-card-header>
-    <md-card-content>
+        <br>
+
+         <div class="card">
+            <div class="card-header">Servereinstellungen:</div>
+            <div class="card-block">
+
             <md-input-container>
             <input md-input placeholder="Server IP" [(ngModel)]="serverIp">
             </md-input-container>
@@ -32,31 +44,17 @@ import { Serveronline } from '../model/serveronline';
             <div *ngIf="status==1">
             <p> <i class="material-icons">done</i>
             Test erfolgreich</p></div>
-            
-    </md-card-content>
-    <md-card-actions>
-        <button md-button (click)="onTestConfig()">TEST</button>
-        <button md-button>SAVE</button>
-    </md-card-actions>
 
-    </md-card>
-<br>
 
- <md-card>
-    <md-card-header>
-        <md-card-title>Randomplay</md-card-title>
-    </md-card-header>
-    <md-card-content>
-           <p>Zufallsmix starten</p>
-           <p>Startet einen mix mit allem</p>
-    </md-card-content>
-    <md-card-actions>
-        <button md-button (click)="startRandomPlay()">START</button>
-    </md-card-actions>
-    </md-card>
-    <br>
+            </div>
+            <div class="card-footer">
+                <button md-button (click)="onTestConfig()">TEST</button>
+                <button md-button>SAVE</button>
+            </div>
+        </div>
 
 </div>
+
 
     `,
     providers: [MusicService]

@@ -4,10 +4,10 @@ import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs/Rx';
 
 import { PlaylistInfoComponent } from './playlistinfo.component';
-import { MusicService } from '../services/music.service';
+import { MusicService } from '../Services/music.service';
 
-import { Playerstatus } from '../model/playerstatus';
-import { Songinfo } from '../model/Songinfo';
+import { Playerstatus } from '../Model/playerstatus';
+import { Songinfo } from '../Model/songinfo';
 
 // Component decorator
 @Component({
@@ -75,47 +75,60 @@ export class BobMainComponent implements OnChanges, OnInit {
     }
 
     checkForChanges(playerstatus: Playerstatus) {
-        console.warn('in Data change');
+        console.warn('in checkForChanges');
         let changed = false;
         if (this.model == null) {
             this.model = playerstatus;
             changed = true;
-            console.warn('Changed ist true 1');
+            console.warn('Changed ist true.');
         }
+
+
+
         if (this.model != null) {
             if (playerstatus != null) {
-                if (this.model.playlist_cur_index !== playerstatus.playlist_cur_index) {
+                const currIndex = Number(this.model.playlist_cur_index);
+                const newIndex = Number(this.model.playlist_cur_index);
+
+                const currTracks = Number(this.model.playlist_tracks);
+                const newTracks = Number(playerstatus.playlist_tracks);
+
+                if (currIndex !== newIndex || currTracks !== newTracks) {
                     changed = true;
-                    console.warn('changed ist true');
+                    console.warn('Index hat sich verschoben, change ist ebenfalls true');
                 }
             }
         }
 
-        // if (changed === true) {
         this.model = playerstatus;
         this.recalculatePlaylist(changed);
-        // }
     }
+
+    intVal(n: number | string): number {
+        return typeof n === 'number' ? n : parseInt(n, 10);
+    }
+
+    isNumeric(n: any): n is number | string {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
 
 
     recreatePlaylistForReal(newSongInfo: Songinfo[], forceRecreate: boolean) {
         console.warn('in real recalculation');
-        let currentoffset = 0;
         let changedLocal: boolean;
 
         changedLocal = false;
 
         // Erkennen von Änderungen für Performance...
         if (this.currentplay != null && this.currentplay[0] != null && forceRecreate === false) {
-            let comparecurrent: Songinfo[];
-            if (this.model.playlist_cur_index === 0) {
-                comparecurrent = newSongInfo.slice(0, 1);
-            }
-            if (this.model.playlist_cur_index === 1) {
-                comparecurrent = newSongInfo.slice(1, 2);
-            }
-            if (comparecurrent != null) {
-                if (comparecurrent[0].id === this.currentplay[0].id) {
+            let newNowPlaying: Songinfo;
+            const sliceFrom = Number(this.model.playlist_cur_index);
+            const sliceTo = Number(this.model.playlist_cur_index) + 1;
+
+            newNowPlaying = newSongInfo.slice(sliceFrom, sliceTo)[0];
+            if (newNowPlaying != null) {
+                if (newNowPlaying.id == this.currentplay[0].id) {
                     changedLocal = false;
                 } else {
                     changedLocal = true;
@@ -124,24 +137,21 @@ export class BobMainComponent implements OnChanges, OnInit {
         }
 
         if (forceRecreate === true || changedLocal === true) {
+
+            const currIndex = this.intVal(this.model.playlist_cur_index);
             // this.nextToPlay = [];
-            if (this.model.playlist_cur_index === 0) {
+            if (currIndex === 0) {
                 console.warn('Index 0, set lastplayed to null');
                 this.currentplay = newSongInfo.slice(0, 1);
                 this.currentplay_single = newSongInfo.slice(0, 1)[0];
                 this.lastPlayed = [];
-                currentoffset = 1;
+            } else {
+                this.lastPlayed = newSongInfo.slice(0, currIndex);
+                this.currentplay = newSongInfo.slice(currIndex, currIndex + 1);
+                this.currentplay_single = this.currentplay[0];
             }
-            if (this.model.playlist_cur_index === 1) {
-                console.warn('Index 1, set lastplayed to correct value');
-                this.lastPlayed = newSongInfo.slice(0, 1);
-                this.currentplay = newSongInfo.slice(1, 2);
-                this.currentplay_single = newSongInfo.slice(1, 2)[0];
-                //console.warn('lastplayed: ' + this.lastPlayed);
-                currentoffset = 2;
-            }
-            this.nextToPlay = newSongInfo.slice(currentoffset, newSongInfo.length);
 
+            this.nextToPlay = newSongInfo.slice(currIndex + 1, newSongInfo.length);
         }
 
         // progress berechnen
@@ -150,12 +160,21 @@ export class BobMainComponent implements OnChanges, OnInit {
                 let total: number;
                 let current: number;
                 console.warn('vorm Rechnen');
-                total = Number(this.currentplay_single.duration.split('.')[0]);
-                current = Number(this.model.time.toString().split('.')[0]);
-                this.progress = (current / total) * 100;
-                this.progress = Number(this.progress.toString().split('.')[0]);
-                this.progressString = this.progress.toString();
-                console.warn('Errechnet ' + this.progress);
+                const durationString = String(this.currentplay_single.duration);
+                const timeString = this.model.time;
+
+                if (durationString != null && durationString != '' && durationString.length > 1) {
+
+                    total = Number(durationString.split('.')[0]);
+                    current = Number(timeString.toString().split('.')[0]);
+                    this.progress = (current / total) * 100;
+                    this.progress = Number(this.progress.toString().split('.')[0]);
+                    this.progressString = this.progress.toString();
+                    console.warn('Errechnet ' + this.progress);
+                } else {
+                    this.progress = 0;
+                    this.progressString = '0';
+                }
             }
 
         }
@@ -164,10 +183,8 @@ export class BobMainComponent implements OnChanges, OnInit {
     recalculatePlaylist(foreRecreate: boolean) {
         console.warn('in recalulate playlist');
         if (this.model != null) {
-
             let newSongInfo: Songinfo[];
             this.musicService.getPlaylist().then(result => {
-                //console.warn('Calling actual recreation');
                 newSongInfo = result;
                 this.recreatePlaylistForReal(newSongInfo, foreRecreate);
             });
@@ -184,7 +201,6 @@ export class BobMainComponent implements OnChanges, OnInit {
         // this.musicService.getPlaylist().then(result => this.songInfoArr = result);
         const tasksSubscription = this.musicService.getStatusRegular().subscribe(data => {
             this.checkForChanges(data);
-            // this.model = data;
         });
     }
 

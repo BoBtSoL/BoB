@@ -1,7 +1,8 @@
 // Imports
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Songinfo } from '../model/songinfo';
+import { Songinfo } from '../Model/songinfo';
 
+import { MusicService } from '../Services/music.service';
 
 // Component decorator
 @Component({
@@ -9,16 +10,16 @@ import { Songinfo } from '../model/songinfo';
     template: `
 
 
-    <div class="card card-inverse" style="background-color: #2b2b2b; border-color: #333;">
-        <div class="card-header">Currently playiing</div>
-        <div class="card-block">
-        <!--<h4 class="card-title">{{comment.title}}</h4>-->
-        <p class="card-text">{{comment.artist}} - {{comment.title}}</p>
+<div class="card card-inverse" style="background-color: #2b2b2b; border-color: #333;">
+  <div class="card-block">
+        <p class="card-text">
+          
+          <button md-icon-button (click)="play()"><md-icon class="material-icons">play_arrow</md-icon> </button> 
+          {{comment.artist}} - {{comment.title}}
+            </p> 
         </div>
-
-    </div>
-    <br>
-
+</div>
+    
     
 
     `
@@ -31,9 +32,12 @@ export class PlaylistCurrentPlayed {
     @Input() comment: Songinfo;
     @Input() listId: string;
 
-    // Constructor
     constructor(
+        private musicService: MusicService
     ) { }
 
+    play() {
+        this.musicService.setMasterPlayerPlayPlaylistId(this.comment.playlist_index);
+    }
 
 }

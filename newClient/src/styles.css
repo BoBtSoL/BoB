@@ -39,6 +39,21 @@
   font-feature-settings: 'liga';
 }
 
+.red-color {
+    color:red;
+}
+
+.grey-color {
+    color:grey;
+}
+
+.blue-color {
+    color:lightblue;
+}
+
+.md-18{
+  font-size: 18px;
+}
 
 .example-h2 {
   margin: 10px;

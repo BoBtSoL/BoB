@@ -1,0 +1,29 @@
+<div class="col-sm-12">
+    <br>
+
+    <div class="card">
+        <div class="card-header">
+            Suche
+        </div>
+        <div class="card-block">
+            <div class="input-group">
+                <input type="text" [(ngModel)]="titel" class="form-control" placeholder="Titel, Band...">
+                <span class="input-group-btn">
+                        <button class="btn btn-secondary" type="button" (click)="onSearch()">Los!</button>
+                    </span>
+            </div>
+
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="card" *ngIf="searchResult">
+        <div class="card-header">
+            Ergebnis: {{searchResult?.count}}
+        </div>
+        <div class="card-block">
+            <resulinfo-component *ngFor="let comment of resultListSplit" [comment]="comment"></resulinfo-component>
+        </div>
+    </div>
+</div>
