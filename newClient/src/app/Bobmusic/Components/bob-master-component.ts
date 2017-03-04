@@ -4,11 +4,12 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'bob-master-component',
     template: `
-            <div>
+
+        <div class="jumbo2">
+            <div class="container">
+                        <div>
                 <h2 style="text-align: center;">BoB Music Control</h2>
             </div>
-
-            <div class="container">
              <div class="row">
                 <div class="col"></div>
                 <div class="col col-sm-12 col-md-12 col-lg-12">
@@ -27,6 +28,7 @@ import { Component } from '@angular/core';
                 </div>
                 <div class="col">
 
+             </div>
              </div>
              </div>
           

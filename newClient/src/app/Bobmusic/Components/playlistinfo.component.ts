@@ -10,7 +10,7 @@ import { MusicService } from '../Services/music.service';
     template: `
 
 
-<div class="card">
+<div class="card transparend-card">
   <div class="card-block">
         <p class="card-text">
           

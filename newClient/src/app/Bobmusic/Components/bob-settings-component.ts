@@ -12,7 +12,7 @@ import { Serveronline } from '../Model/serveronline';
     <br>
      <div class="col-sm-12">
 
-        <div class="card">
+        <div class="card transparend-card">
             <div class="card-header">Zufallsmix:</div>
             <div class="card-block">
                 <p class="card-text">
@@ -20,13 +20,13 @@ import { Serveronline } from '../Model/serveronline';
                 </p>
             </div>
             <div class="card-footer">
-                <button md-button (click)="startRandomPlay()">Alles</button>
+                <button class="btn btn-outline-danger" type="button" (click)="startRandomPlay()">Alles</button>
             </div>
         </div>
 
         <br>
 
-         <div class="card">
+         <div class="card transparend-card">
             <div class="card-header">Servereinstellungen:</div>
             <div class="card-block">
 
@@ -48,8 +48,8 @@ import { Serveronline } from '../Model/serveronline';
 
             </div>
             <div class="card-footer">
-                <button md-button (click)="onTestConfig()">TEST</button>
-                <button md-button>SAVE</button>
+            <button class="btn btn-outline-danger" type="button" (click)="onTestConfig()">TEST</button>
+            <button class="btn btn-outline-danger" type="button" (click)="onSave()">TEST</button>
             </div>
         </div>
 

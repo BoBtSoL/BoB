@@ -10,7 +10,7 @@ import { Songinfo } from '../Model/songinfo';
     selector: 'bob-volume-slave-component',
     template: `
             <br>
-        <div class="card text-center">
+        <div class="card text-center transparend-card">
         <div class="card-header">
             Vol. Slave
         </div>

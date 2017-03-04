@@ -9,23 +9,16 @@ import { MusicService } from '../Services/music.service';
     selector: 'resulinfo-component',
     template: `
 
-
-<div class="card">
+<div class="card transparend-card">
     <div class="card-block">
         <p class="card-text">
             {{comment.artist}} - {{comment.title}}
         </p>
-    </div>
-    <div class="card-footer">
-                <button md-button (click)="playNow()">PLAY NOW</button>
-            <button md-button (click)="addToPlaylist()">ADD</button>
-     <!--<small class="text-muted">Player online</small>-->
-    </div>
-</div>
 
-
-    <br>
-    
+        <button (click)="playNow()" type="button" class="btn btn-outline-danger">PLAY NOW</button>
+        <button (click)="addToPlaylist()" type="button" class="btn btn-outline-danger">ADD</button>
+    </div>
+</div>   
    `
 })
 // Component class

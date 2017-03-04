@@ -10,7 +10,7 @@ import { MusicService } from '../Services/music.service';
     template: `
 
 
-<div class="card card-inverse" style="background-color: #2b2b2b; border-color: #333;">
+<div class="card card-outline-danger transparend-playlist-active-card">
   <div class="card-block">
         <p class="card-text">
           
