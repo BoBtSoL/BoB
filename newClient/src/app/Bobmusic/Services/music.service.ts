@@ -3,6 +3,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Playerstatus } from '../Model/playerstatus';
+import { Player } from '../Model/player';
+import { SyncGroupRoot } from '../Model/syncgrouproot';
 import { Songinfo } from '../Model/songinfo';
 import { SongSearchResult } from '../Model/songs-search-result';
 import { Serveronline } from '../Model/serveronline';
@@ -16,8 +18,10 @@ import 'rxjs/add/operator/catch';
 @Injectable()
 export class MusicService {
 
-    baseUrl = 'http://192.168.0.18:3000';
-    baseServerUrl = '192.168.0.18';
+    //baseUrl = 'http://192.168.0.18:3000';
+    baseUrl = 'http://192.168.42.1:3000';
+    //baseServerUrl = '192.168.0.18';
+    baseServerUrl = '192.168.42.1';
     baseServerPort = 3000;
 
     // private instance variable to hold base url
@@ -25,6 +29,7 @@ export class MusicService {
     private musicUrl = this.baseUrl + '/api/music/status';
     private commandUrl = this.baseUrl + '/api/music/command/';
     private playlistUrl = this.baseUrl + '/api/music/playlist';
+    private playlisFromTotUrl = this.baseUrl + '/api/music/get/playlist/';
     private masterPlayerUrl = this.baseUrl + '/api/music/get/masterplayer';
     private slavePlayerUrl = this.baseUrl + '/api/music/get/slaveplayer';
     private masterPlayerSetVolumeUrl = this.baseUrl + '/api/music/set/masterplayer/volume/';
@@ -34,6 +39,9 @@ export class MusicService {
     private songSearchUrl = this.baseUrl + '/api/music/search/song/';
     private addTrackUrl = this.baseUrl + '/api/music/set/masterplayer/addtoplaylist/';
     private playTrackNowUrl = this.baseUrl + '/api/music/set/masterplayer/startenow/';
+    private getSyncGroupsUrl = this.baseUrl + '/api/music/syncgroups/get/';
+    private resetUrl = this.baseUrl + '/api/music/reset';
+    private getAllPlayersUrl = this.baseUrl + '/api/music/players/get';
 
     private statusSuffix = '/api/server/status';
     // Resolve HTTP using the constructor
@@ -58,13 +66,7 @@ export class MusicService {
     getStatusRegular(): Observable<Playerstatus> {
         return Observable.interval(5000)
             .switchMap(() => this.http.get(this.musicUrl))
-            //flatMapLatest(() => http.get(this.musicUrl))
             .map(response => response.json() as Playerstatus);
-        // return this.http.get()
-        // ...and calling .json() on the response to return data
-        //     .map(response => response.json() as Serverstatus)
-        // ...errors if any
-        //     .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     }
 
     getStatus(): Observable<Playerstatus> {
@@ -115,6 +117,12 @@ export class MusicService {
 
     getPlaylist(): Promise<Songinfo[]> {
         return this.http.get(this.playlistUrl).toPromise()
+            .then(response => response.json() as Songinfo[])
+            .catch(this.handleError);
+    }
+
+    getPlaylistFromTo(from: string, to: string): Promise<Songinfo[]> {
+        return this.http.get(this.playlisFromTotUrl + from + '/' + to).toPromise()
             .then(response => response.json() as Songinfo[])
             .catch(this.handleError);
     }
@@ -170,6 +178,22 @@ export class MusicService {
     playNow(id: number): Promise<Playerstatus> {
         return this.http.get(this.playTrackNowUrl + id).toPromise()
             .then(response => response.json() as Playerstatus)
+            .catch(this.handleError);
+    }
+
+    getSyncGroups(): Promise<SyncGroupRoot> {
+        return this.http.get(this.getSyncGroupsUrl).toPromise()
+            .then(response => response.json() as SyncGroupRoot)
+            .catch(this.handleError);
+    }
+
+    resetServer() {
+        this.http.get(this.resetUrl);
+    }
+
+    getAllPlayers(): Promise<Player[]> {
+        return this.http.get(this.getAllPlayersUrl).toPromise()
+            .then(response => response.json() as Player[])
             .catch(this.handleError);
     }
 

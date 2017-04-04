@@ -1,9 +1,9 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
-import { MusicService } from '../Services/music.service';
+import { MusicService } from '../../Services/music.service';
 
-import { Playerstatus } from '../Model/playerstatus';
-import { Songinfo } from '../Model/songinfo';
+import { Playerstatus } from '../../Model/playerstatus';
+import { Songinfo } from '../../Model/songinfo';
 
 
 @Component({

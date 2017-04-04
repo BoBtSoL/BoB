@@ -1,18 +1,18 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
-import { MusicService } from '../Services/music.service';
+import { MusicService } from '../../Services/music.service';
 
-import { Playerstatus } from '../Model/playerstatus';
-import { Songinfo } from '../Model/songinfo';
-import { Serveronline } from '../Model/serveronline';
-import { SongSearchResult } from '../Model/songs-search-result';
+import { Playerstatus } from '../../Model/playerstatus';
+import { Songinfo } from '../../Model/songinfo';
+import { Serveronline } from '../../Model/serveronline';
+import { SongSearchResult } from '../../Model/songs-search-result';
 
 @Component({
-    selector: 'bob-search-component',
-    templateUrl: './bob-search-component.html',
+    selector: 'bob-tab-search-component',
+    templateUrl: './bob-tab-search-component.html',
     providers: [MusicService]
 })
-export class BobSearchComponent implements OnInit, OnChanges {
+export class BobTabSearchComponent implements OnInit, OnChanges {
 
     band: string;
     titel: string;

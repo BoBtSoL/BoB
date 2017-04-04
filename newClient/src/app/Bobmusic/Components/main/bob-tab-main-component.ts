@@ -3,20 +3,20 @@ import { Component, EventEmitter, Input, OnChanges, OnInit } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs/Rx';
 
-import { PlaylistInfoComponent } from './playlistinfo.component';
-import { MusicService } from '../Services/music.service';
+import { PlaylistInfoComponent } from './../playlist/playlistinfo.component';
+import { MusicService } from '../../Services/music.service';
 
-import { Playerstatus } from '../Model/playerstatus';
-import { Songinfo } from '../Model/songinfo';
+import { Playerstatus } from '../../Model/playerstatus';
+import { Songinfo } from '../../Model/songinfo';
 
 // Component decorator
 @Component({
-    selector: 'appbobmain',
-    templateUrl: './bobmain.component.html',
+    selector: 'bob-tab-main',
+    templateUrl: './bob-tab-main-component.html',
     providers: [MusicService]
 })
 // Component class
-export class BobMainComponent implements OnChanges, OnInit {
+export class BobTabMainComponent implements OnChanges, OnInit {
     model: Playerstatus;
     anotherModel: Playerstatus;
     songInfoArr: Songinfo[];
@@ -28,6 +28,8 @@ export class BobMainComponent implements OnChanges, OnInit {
     progress: number;
     progressString: string;
 
+    lastplayedToShow = 3;
+
     // Constructor with injected service
     constructor(
         private musicService: MusicService
@@ -35,7 +37,6 @@ export class BobMainComponent implements OnChanges, OnInit {
         this.progress = 10;
         this.anotherModel = new Playerstatus();
         this.anotherModel.mode = 'wow';
-        //const tasksSubscription = musicService.getStatusRegular().subscribe(data => this.model = data);
     }
 
     isOnline() {
@@ -83,8 +84,6 @@ export class BobMainComponent implements OnChanges, OnInit {
             console.warn('Changed ist true.');
         }
 
-
-
         if (this.model != null) {
             if (playerstatus != null) {
                 const currIndex = Number(this.model.playlist_cur_index);
@@ -92,7 +91,6 @@ export class BobMainComponent implements OnChanges, OnInit {
 
                 const currTracks = Number(this.model.playlist_tracks);
                 const newTracks = Number(playerstatus.playlist_tracks);
-
                 if (currIndex !== newIndex || currTracks !== newTracks) {
                     changed = true;
                     console.warn('Index hat sich verschoben, change ist ebenfalls true');
@@ -145,13 +143,38 @@ export class BobMainComponent implements OnChanges, OnInit {
                 this.currentplay = newSongInfo.slice(0, 1);
                 this.currentplay_single = newSongInfo.slice(0, 1)[0];
                 this.lastPlayed = [];
+                this.nextToPlay = newSongInfo.slice(currIndex + 1, newSongInfo.length);
             } else {
-                this.lastPlayed = newSongInfo.slice(0, currIndex);
-                this.currentplay = newSongInfo.slice(currIndex, currIndex + 1);
+
+                let tmpLastPlayed: Songinfo[];
+                let tmpCurrentPlay: Songinfo[];
+                let tmpNextToPlay: Songinfo[];
+
+                tmpLastPlayed =[];
+                tmpCurrentPlay=[];
+                tmpNextToPlay=[];
+
+                for (const currSongInfo of newSongInfo) {
+                    if (this.intVal(currSongInfo.playlist_index) < this.intVal(this.model.playlist_cur_index)) {
+                        tmpLastPlayed.push(currSongInfo);
+                    }
+
+                    if (this.intVal(currSongInfo.playlist_index) === this.intVal(this.model.playlist_cur_index)) {
+                        tmpCurrentPlay.push(currSongInfo);
+                    }
+
+                    if (this.intVal(currSongInfo.playlist_index) > this.intVal(this.model.playlist_cur_index)) {
+                        tmpNextToPlay.push(currSongInfo);
+                    }
+                }
+
+                this.lastPlayed = tmpLastPlayed;
+                this.currentplay = tmpCurrentPlay;
+                this.nextToPlay = tmpNextToPlay;
+
                 this.currentplay_single = this.currentplay[0];
             }
 
-            this.nextToPlay = newSongInfo.slice(currIndex + 1, newSongInfo.length);
         }
 
         // progress berechnen
@@ -182,12 +205,31 @@ export class BobMainComponent implements OnChanges, OnInit {
 
     recalculatePlaylist(foreRecreate: boolean) {
         console.warn('in recalulate playlist');
+        let currentPlaylistIndex = -1;
         if (this.model != null) {
-            let newSongInfo: Songinfo[];
-            this.musicService.getPlaylist().then(result => {
-                newSongInfo = result;
-                this.recreatePlaylistForReal(newSongInfo, foreRecreate);
-            });
+            currentPlaylistIndex = Number(this.model.playlist_cur_index);
+        }
+
+        if (this.model != null) {
+            if (currentPlaylistIndex > -1) {
+                let calculateFrom = currentPlaylistIndex - this.lastplayedToShow;
+                if (calculateFrom < 0) {
+                    calculateFrom = 0;
+                }
+                const calculateTo = 10;
+                let newSongInfo: Songinfo[];
+                this.musicService.getPlaylistFromTo(calculateFrom.toString(), calculateTo.toString()).then(result => {
+                    newSongInfo = result;
+                    this.recreatePlaylistForReal(newSongInfo, foreRecreate);
+                });
+            } else {
+
+                let newSongInfo: Songinfo[];
+                this.musicService.getPlaylist().then(result => {
+                    newSongInfo = result;
+                    this.recreatePlaylistForReal(newSongInfo, foreRecreate);
+                });
+            }
         }
     }
 

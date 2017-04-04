@@ -13,7 +13,7 @@
                         <p class="card-text">
                             <md-progress-bar mode="buffer" value="{{progress}}" bufferValue="100"></md-progress-bar>
                         </p>
-                        <div class="text-center complete-transparend">
+                        <div class="text-center complete-transparend red-color">
                             <button md-icon-button (click)="prev()"><md-icon>fast_rewind</md-icon></button>
                             <button *ngIf="isPlaying()==false" (click)="play()" md-icon-button><md-icon>play_arrow</md-icon></button>
                             <button *ngIf="isPlaying()==true" (click)="pause()" md-icon-button><md-icon class="material-icons">pause</md-icon></button>

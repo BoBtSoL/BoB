@@ -1,0 +1,30 @@
+<div class="col-sm-12">
+    <br>
+
+    <div class="card transparend-card">
+        <div class="card-header text-center">
+            Status Server
+        </div>
+        <div class="card-block">
+            <h3 class="card-title">Status Server</h3>
+            <div class="row">
+                <div class="col-sm-3">
+                    <p>Genereller Status</p>
+                </div>
+                <div class="col-sm-9">
+                    <p>{{serverStatus}}</p>
+                </div>
+            </div>
+            <button class="btn btn-outline-danger" type="button" (click)="onRefreshStatus()">Status aktualisieren</button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <bob-player class="col-sm-6" *ngFor="let player of players" [player]="player"></bob-player>
+    </div>
+    <br>
+    <div class="row">
+        <bob-player-status class="col-sm-6" [playerstatus]="masterPlayerStatus"></bob-player-status>
+        <bob-player-status class="col-sm-6" [playerstatus]="slavePlayerStatus"></bob-player-status>
+    </div>
+</div>

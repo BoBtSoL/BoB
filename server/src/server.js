@@ -8,17 +8,23 @@ import Jayson from 'jayson';
 
 class Server {
 
+
     constructor() {
         this.app = express();
         this.fs = fs;
+        this.serverUrl = 'http://192.168.42.1';
         //this.squeeze = new SqueezeServer('http://localhost', 9000);
-        this.squeeze = new SqueezeServer('http://192.168.42.1', 9000);
+        this.squeeze = new SqueezeServer(this.serverUrl, 9000);
         //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
         this.dataFile = path.join(__dirname, '../data.json');
         this.configreMasterAndSlave(this);
     }
 
 
+    resetServerAndPlayers() {
+        this.squeeze = new SqueezeServer(this.serverUrl, 9000);
+        this.configreMasterAndSlave(this);
+    }
 
     configureApp() {
         this.app.set('port', (process.env.PORT || 3000));
@@ -48,7 +54,6 @@ class Server {
     }
 
     configreMasterAndSlave(outerthis) {
-        
         this.squeeze.getPlayers(function (sqeezeResult) {
             console.info(sqeezeResult);
             if (sqeezeResult != null && (sqeezeResult.ok == 'true' || sqeezeResult.ok == true)) {
@@ -67,25 +72,15 @@ class Server {
     }
 
     getMasterPlayer() {
-
         var realPlayer;
         if (this.masterplayerid == null) {
             realPlayer = this.squeeze.players['00:00:00:00:00:00'];
             if (realPlayer == undefined) {
                 console.warn('scheisse');
-                //realPlayer = this.squeeze.players['00:00:00:00:00:00'];
             }
         } else {
             realPlayer = this.squeeze.players[this.masterplayerid];
         }
-
-        //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
-        //var realPlayer = this.squeeze.players['00:00:00:00:00:00'];
-
-        //if (realPlayer == undefined) {
-
-        //}
-
         return realPlayer;
     }
 
@@ -126,42 +121,66 @@ class Server {
             res.json(JSON.parse(stringified));
         });
 
-        this.app.get('/api/music/status', (req, res) => {
-            var realPlayer = this.getMasterPlayer();
-
-            //hackhac
-
-            if (realPlayer == null) {
-                // doof
-            } else {
-                realPlayer.getStatus(function (sqeezeResult) {
-                    console.dir(sqeezeResult);
+        this.app.get('/api/music/syncgroups/get', (req, res) => {
+            this.squeeze.getSyncGroups(function (sqeezeResult) {
+                console.dir(sqeezeResult);
+                if (sqeezeResult != null && sqeezeResult.result != null) {
                     var stringified = JSON.stringify(sqeezeResult.result);
-                    stringified = stringified.replace(/mixer volume/g, 'mixer_volume');
-                    stringified = stringified.replace(/playlist shuffle/g, 'playlist_shuffle');
-                    stringified = stringified.replace(/playlist repeat/g, 'playlist_repeat');
-                    stringified = stringified.replace(/playlist mode/g, 'playlist_mode');
                     res.json(JSON.parse(stringified));
-                });
-            }
-
-            //var realPlayer = this.squeeze.players['bc:5f:f4:4a:c7:28'];
-
+                }
+            });
         });
 
-        this.app.get('/api/music/get/masterplayer', (req, res) => {
 
+        this.app.get('/api/music/players/get', (req, res) => {
+            this.squeeze.getPlayers(function (sqeezeResult) {
+                console.info(sqeezeResult);
+                if (sqeezeResult != null && (sqeezeResult.ok == 'true' || sqeezeResult.ok == true)) {
+                    // Antwort sinnvoll
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                }
+            });
+        });
+
+        this.app.get('/api/music/reset', (req, res) => {
+            this.resetServerAndPlayers();
+            res.json(JSON.parse(JSON.stringify('ok')));
+        });
+
+        this.app.get('/api/music/players/count/get', (req, res) => {
+            this.squeeze.getPlayerCount(function (sqeezeResult) {
+                console.dir(sqeezeResult);
+                if (sqeezeResult != null && sqeezeResult.result != null) {
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                }
+            });
+        });
+
+
+        this.app.get('/api/music/status', (req, res) => {
             var realPlayer = this.getMasterPlayer();
-            var funcFormat = this.formatResultForPlayer;
-
             realPlayer.getStatus(function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
             })
+
+        });
+
+        this.app.get('/api/music/get/masterplayer', (req, res) => {
+            var realPlayer = this.getMasterPlayer();
+            if (realPlayer == null) {
+                //doof
+            } else {
+                realPlayer.getStatus(function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                })
+            }
         });
 
         this.app.get('/api/music/get/slaveplayer', (req, res) => {
-
             var realPlayer = this.getSlavePlayer();
             if (realPlayer == null) {
                 //doof
@@ -171,6 +190,15 @@ class Server {
                     res.json(JSON.parse(stringified));
                 })
             }
+        });
+
+        this.app.get('/api/music/get/playlists', (req, res) => {
+            this.squeeze.request("", ["playlists", "0", "100"], function (sqeezeResult) {
+                var stringified = JSON.stringify(sqeezeResult.result);
+                //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                res.json(JSON.parse(stringified));
+            });
+
         });
 
 
@@ -183,6 +211,31 @@ class Server {
                 if (stringified != null) {
                     stringified = stringified.replace(/playlist index/g, 'playlist_index');
                     res.json(JSON.parse(stringified));
+                } else {
+                    var response = '';
+                    response = JSON.stringify(response);
+                    res.json(JSON.parse(response));
+                }
+
+            });
+
+        });
+
+        this.app.get('/api/music/get/playlist/:from/:to', (req, res) => {
+            var realPlayer = this.getMasterPlayer();
+            var from = req.params.from;
+            var to = req.params.to;
+
+            realPlayer.getPlaylist(from, to, function (sqeezeResult) {
+                console.dir(sqeezeResult);
+                var stringified = JSON.stringify(sqeezeResult.result);
+                if (stringified != null) {
+                    stringified = stringified.replace(/playlist index/g, 'playlist_index');
+                    res.json(JSON.parse(stringified));
+                } else {
+                    var response = '';
+                    response = JSON.stringify(response);
+                    res.json(JSON.parse(response));
                 }
 
             });
@@ -333,131 +386,6 @@ class Server {
             realPlayer.setVolume(command, function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
-            });
-        });
-
-
-        this.app.put('/api/comments/:id', (req, res) => {
-            this.fs.readFile(this.dataFile, (err, data) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                let comments = JSON.parse(data);
-                let idIndex = 0;
-                let findCommentById = comments.filter(comment => {
-                    if (comment.id == req.params.id) {
-                        idIndex = comments.indexOf(comment);
-                        return comment;
-                    }
-                });
-                findCommentById[0].text = req.body.text;
-                findCommentById[0].author = req.body.author;
-
-                comments.splice(idIndex, 1, findCommentById[0]);
-                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-                    res.json(comments);
-                });
-            });
-        });
-
-        this.app.post('/api/comments', (req, res) => {
-            this.fs.readFile(this.dataFile, (err, data) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                var comments = JSON.parse(data);
-
-                var newComment = {
-                    id: Date.now(),
-                    author: req.body.author,
-                    text: req.body.text,
-                };
-
-                comments.push(newComment);
-                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), (err) => {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-
-                    this.twilioClient.messages.create({
-                        body: `Message from ${req.body.author}. Content: ${req.body.text}`,
-                        to: process.env.TWILIO_TO,
-                        from: process.env.TWILIO_FROM
-                        // mediaUrl: 'http://www.yourserver.com/someimage.png'
-                    }, function (err, data) {
-                        if (err) {
-                            console.error('Could not notify administrator');
-                            console.error(err);
-                        } else {
-                            console.log('Administrator notified');
-                        }
-                    });
-                    res.json(comments);
-                });
-            });
-        });
-
-
-        this.app.put('/api/comments/:id', (req, res) => {
-            this.fs.readFile(this.dataFile, (err, data) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                let comments = JSON.parse(data);
-                let idIndex = 0;
-                let findCommentById = comments.filter(comment => {
-                    if (comment.id == req.params.id) {
-                        idIndex = comments.indexOf(comment);
-                        return comment;
-                    }
-                });
-                findCommentById[0].text = req.body.text;
-                findCommentById[0].author = req.body.author;
-
-                comments.splice(idIndex, 1, findCommentById[0]);
-                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-                    res.json(comments);
-                });
-            });
-        });
-        this.app.delete('/api/comments/:id', (req, res) => {
-            this.fs.readFile(this.dataFile, (err, data) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                let comments = JSON.parse(data);
-                let idIndex = null;
-                let findCommentById = comments.filter(comment => {
-                    if (comment.id == req.params.id) {
-                        idIndex = comments.indexOf(comment);
-                        return comment;
-                    }
-                });
-
-                if (idIndex >= 0) {
-                    comments.splice(idIndex, 1);
-                }
-
-                this.fs.writeFile(this.dataFile, JSON.stringify(comments, null, 4), function (err) {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-                    res.json(comments);
-                });
             });
         });
     }

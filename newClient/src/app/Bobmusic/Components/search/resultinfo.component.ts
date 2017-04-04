@@ -1,8 +1,8 @@
 // Imports
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Songinfo } from '../Model/songinfo';
+import { Songinfo } from '../../Model/songinfo';
 
-import { MusicService } from '../Services/music.service';
+import { MusicService } from '../../Services/music.service';
 
 // Component decorator
 @Component({

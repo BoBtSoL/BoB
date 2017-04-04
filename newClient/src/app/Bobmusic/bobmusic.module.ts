@@ -4,16 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 
-import { BobMainComponent } from './Components/bobmain.component';
-import { PlaylistInfoComponent } from './Components/playlistinfo.component';
+import { BobTabMainComponent } from './Components/main/bob-tab-main-component';
+import { PlaylistInfoComponent } from './Components/playlist/playlistinfo.component';
 import { BobMasterComponent } from './Components/bob-master-component';
-import { BobVolumeControl } from './Components/bob-volume-component';
-import { BobVolumeSlaveControl } from './Components/bob-volume-slave-component';
-import { PlayListLastPlayed } from './Components/playlist-lastplayed.component';
-import { PlaylistCurrentPlayed } from './Components/playlist-currentplayed.components';
-import { BobSettingsComponent } from './Components/bob-settings-component';
-import { BobSearchComponent } from './Components/bob-search-component';
-import { ResultInfoComponent } from './Components/resultinfo.component';
+import { BobVolumeControl } from './Components/volume/bob-volume-component';
+import { BobVolumeSlaveControl } from './Components/volume/bob-volume-slave-component';
+import { PlayListLastPlayed } from './Components/playlist/playlist-lastplayed.component';
+import { PlaylistCurrentPlayed } from './Components/playlist/playlist-currentplayed.components';
+import { BobTabSettingsComponent } from './Components/settings/bob-tab-settings-component';
+import { BobTabSearchComponent } from './Components/search/bob-tab-search-component';
+import { ResultInfoComponent } from './Components/search/resultinfo.component';
+import { BobTabStatusComponent } from './Components/status/bob-tab-status-component';
+import { BobPlayerComponent } from './Components/status/bob-player-component';
+import { BobPlayerStatusComponent } from './Components/status/bob-player-status-component';
 
 import { MusicService } from './Services/music.service';
 
@@ -28,15 +31,18 @@ import { MusicService } from './Services/music.service';
   ],
   declarations: [
     BobMasterComponent,
-    BobMainComponent,
+    BobTabMainComponent,
     PlaylistInfoComponent,
     BobVolumeControl,
     BobVolumeSlaveControl,
     PlayListLastPlayed,
     PlaylistCurrentPlayed,
-    BobSettingsComponent,
-    BobSearchComponent,
-    ResultInfoComponent
+    BobTabSettingsComponent,
+    BobTabSearchComponent,
+    ResultInfoComponent,
+    BobTabStatusComponent,
+    BobPlayerComponent,
+    BobPlayerStatusComponent
   ],
 
   providers: [
@@ -45,15 +51,18 @@ import { MusicService } from './Services/music.service';
 
   exports: [
     BobMasterComponent,
-    BobMainComponent,
+    BobTabMainComponent,
     PlaylistInfoComponent,
     BobVolumeControl,
     BobVolumeSlaveControl,
     PlayListLastPlayed,
     PlaylistCurrentPlayed,
-    BobSettingsComponent,
-    BobSearchComponent,
-    ResultInfoComponent
+    BobTabSettingsComponent,
+    BobTabSearchComponent,
+    ResultInfoComponent,
+    BobTabStatusComponent,
+    BobPlayerComponent,
+    BobPlayerStatusComponent
   ]
 
 })
