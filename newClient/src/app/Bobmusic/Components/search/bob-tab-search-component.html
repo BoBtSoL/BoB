@@ -7,7 +7,7 @@
         </div>
         <div class="card transparend-card">
             <div class="input-group">
-                <input type="text" [(ngModel)]="titel" class="form-control bob-input" placeholder="Titel, Band...">
+                <input type="text" (keyup.enter)="onSearch()" [(ngModel)]="titel" class="form-control bob-input" placeholder="Titel, Band...">
                 <span class="input-group-btn">
                         <button class="btn btn-outline-danger" type="button" (click)="onSearch()">Los!</button>
                         <!--<button class="btn btn-secondary" type="button" (click)="onSearch()">Los!</button>-->
