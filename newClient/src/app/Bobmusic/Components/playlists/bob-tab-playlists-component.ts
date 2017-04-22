@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angu
 import { MusicService } from '../../Services/music.service';
 
 import { PlaylistsLoopRoot } from '../../Model/playlistslooproot';
-import { PlaylistsLoop } from './playlistsloop';
+import { PlaylistsLoop } from '../../Model/playlistsloop';
 
 @Component({
     selector: 'bob-playlists-component',
