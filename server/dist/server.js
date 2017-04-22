@@ -230,6 +230,14 @@ var Server = function () {
                 }
             });
 
+            this.app.get('/api/music/get/playlists', function (req, res) {
+                _this.squeeze.request("", ["playlists", "0", "100"], function (sqeezeResult) {
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
             this.app.get('/api/music/playlist', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
 
@@ -387,6 +395,26 @@ var Server = function () {
                 var realPlayer = _this.getMasterPlayer();
 
                 _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
+            this.app.get('/api/music/set/masterplayer/addplaylist/:playlistid', function (req, res) {
+                var playlistid = req.params.trackid;
+                var realPlayer = _this.getMasterPlayer();
+
+                _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
+            this.app.get('/api/music/set/masterplayer/startplaylistnow/:trackid', function (req, res) {
+                var trackid = req.params.trackid;
+                var realPlayer = _this.getMasterPlayer();
+
+                _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
                 });

@@ -15,6 +15,8 @@ import { BobTabSettingsComponent } from './Components/settings/bob-tab-settings-
 import { BobTabSearchComponent } from './Components/search/bob-tab-search-component';
 import { ResultInfoComponent } from './Components/search/resultinfo.component';
 import { BobTabStatusComponent } from './Components/status/bob-tab-status-component';
+import { BobTabPlaylistsComponent } from './Components/playlists/bob-tab-playlists-component';
+import { BobPlaylistsDetailComponent } from './Components/playlists/bob-playlists-detail-component';
 import { BobPlayerComponent } from './Components/status/bob-player-component';
 import { BobPlayerStatusComponent } from './Components/status/bob-player-status-component';
 
@@ -41,6 +43,8 @@ import { MusicService } from './Services/music.service';
     BobTabSearchComponent,
     ResultInfoComponent,
     BobTabStatusComponent,
+    BobTabPlaylistsComponent,
+    BobPlaylistsDetailComponent,
     BobPlayerComponent,
     BobPlayerStatusComponent
   ],
@@ -61,6 +65,8 @@ import { MusicService } from './Services/music.service';
     BobTabSearchComponent,
     ResultInfoComponent,
     BobTabStatusComponent,
+    BobTabPlaylistsComponent,
+    BobPlaylistsDetailComponent,
     BobPlayerComponent,
     BobPlayerStatusComponent
   ]
