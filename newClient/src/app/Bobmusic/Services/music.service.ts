@@ -19,10 +19,10 @@ import 'rxjs/add/operator/catch';
 @Injectable()
 export class MusicService {
 
-    baseUrl = 'http://192.168.0.18:3000';
-    //baseUrl = 'http://192.168.42.1:3000';
-    baseServerUrl = '192.168.0.18';
-    //baseServerUrl = '192.168.42.1';
+    //baseUrl = 'http://192.168.0.18:3000';
+    baseUrl = 'http://192.168.42.1:3000';
+    //baseServerUrl = '192.168.0.18';
+    baseServerUrl = '192.168.42.1';
     baseServerPort = 3000;
 
     // private instance variable to hold base url
