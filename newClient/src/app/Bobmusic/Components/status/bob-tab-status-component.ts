@@ -27,12 +27,8 @@ export class BobTabStatusComponent implements OnInit {
         this.musicService.getAllPlayers().then(result => {
             this.players = result;
         });
-
-        this.musicService.getAllPlayers().then(result => {
-            this.players = result;
-        });
         this.musicService.getMasterPlayer().then(result => {
-            this.masterPlayerStatus = result;
+        this.masterPlayerStatus = result;
         });
         this.musicService.getSlavePlayer().then(result => {
             this.slavePlayerStatus = result;

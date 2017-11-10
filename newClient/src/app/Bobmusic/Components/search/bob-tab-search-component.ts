@@ -24,6 +24,8 @@ export class BobTabSearchComponent implements OnInit, OnChanges {
 
     resultListSplit: Songinfo[];
 
+    noResultFoundText: string;
+
     constructor(
         private musicService: MusicService
     ) { this.status = 0; }
@@ -49,21 +51,36 @@ export class BobTabSearchComponent implements OnInit, OnChanges {
     }
 
     showResults() {
-        if (this.searchResult == null) {
-            console.warn('war wohl nix!');
+        if (this.searchResult == null || this.searchResult.count === 0) {
+            this.noResultFoundText = 'Keine Treffer: ' + this.titel;
+            //console.warn('war wohl nix!');
         } else {
-            console.warn('wuhu, found ' + this.searchResult.count);
+            //console.warn('wuhu, found ' + this.searchResult.count);
             this.resultListSplit = this.searchResult.titles_loop;
         }
     }
 
     callError(reason) {
-        console.warn('war wohl nix' + reason);
+        //console.warn('war wohl nix' + reason);
         this.status = 2;
     }
 
     callSuccess() {
         this.status = 1;
+    }
+
+    resultsFound() {
+        let found = false;
+        if (this.searchResult == null) {
+            found = false;
+        } else {
+            if (this.searchResult.titles_loop != null) {
+                if (this.searchResult.titles_loop.length > 0) {
+                    found = true;
+                }
+            }
+        }
+        return found;
     }
 
 }

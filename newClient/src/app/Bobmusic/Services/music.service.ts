@@ -19,9 +19,9 @@ import 'rxjs/add/operator/catch';
 @Injectable()
 export class MusicService {
 
-    //baseUrl = 'http://192.168.0.18:3000';
+    //baseUrl = 'http://192.168.1.67:3000';
     baseUrl = 'http://192.168.42.1:3000';
-    //baseServerUrl = '192.168.0.18';
+    //baseServerUrl = '192.168.1.67';
     baseServerUrl = '192.168.42.1';
     baseServerPort = 3000;
 
@@ -182,9 +182,16 @@ export class MusicService {
     }
 
     playNow(id: number): Promise<Playerstatus> {
-        return this.http.get(this.playTrackNowUrl + id).toPromise()
-            .then(response => response.json() as Playerstatus)
+       return this.http.get(this.addTrackUrl + id).toPromise()
+            .then(response => {
+                 response.json() as Playerstatus;
+               return this.next();
+                })
             .catch(this.handleError);
+
+       // return this.http.get(this.playTrackNowUrl + id).toPromise()
+         //   .then(response => response.json() as Playerstatus)
+        //    .catch(this.handleError);
     }
 
     addPlaylist(id: number): Promise<Playerstatus> {
@@ -206,7 +213,8 @@ export class MusicService {
     }
 
     resetServer() {
-        this.http.get(this.resetUrl);
+        this.http.get(this.resetUrl).toPromise()
+        .then(response => response.json() as Playerstatus);
     }
 
     getAllPlayers(): Promise<Player[]> {
@@ -222,7 +230,7 @@ export class MusicService {
     }
 
     private handleError(error: any): Promise<any> {
-        console.error('An error occurred', error); // for demo purposes only
+        //console.error('An error occurred', error); // for demo purposes only
         return Promise.reject(error.message || error);
     }
     // Fetch all existing comments

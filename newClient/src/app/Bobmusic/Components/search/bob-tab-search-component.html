@@ -14,8 +14,18 @@
                     </span>
             </div>
         </div>
-        <!--<div class="card-block">-->
+
+        <div *ngIf="resultsFound()==true">
             <resulinfo-component *ngFor="let comment of resultListSplit" [comment]="comment"></resulinfo-component>
-       <!-- </div>-->
+        </div>
+        <div *ngIf="resultsFound()==false">
+            <div class="card transparend-card">
+                <div class="card-block">
+                    <p class="card-text">
+                         Kein Ergebnis oder noch nicht gesucht
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

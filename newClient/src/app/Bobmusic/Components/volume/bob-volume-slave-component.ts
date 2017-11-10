@@ -46,7 +46,7 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     playerStatus: Playerstatus;
 
     clicked(event) {
-        console.warn('wow. Clicked fired ' + this.myModel);
+        //console.warn('wow. Clicked fired ' + this.myModel);
         this.musicService.setSlavePlayerVolume(this.myModel);
     }
 
@@ -61,14 +61,14 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     }
 
     onSliderChange() {
-        // console.warn('changed om sliderchange!');
+        // //console.warn('changed om sliderchange!');
     }
 
     setValuesCorrect() {
         if (this.playerStatus != null) {
             this.value = this.playerStatus.mixer_volume;
             this.myModel = this.playerStatus.mixer_volume;
-            console.warn('set value!');
+            //console.warn('set value!');
             this.ready = true;
         }
     }

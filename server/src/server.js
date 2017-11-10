@@ -161,11 +161,14 @@ class Server {
 
         this.app.get('/api/music/status', (req, res) => {
             var realPlayer = this.getMasterPlayer();
+            if(realPlayer==null){
+                res.statusCode=500;
+            }else{
             realPlayer.getStatus(function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                res.json(JSON.parse(stringified));
+                res.json(JSON.parse(stringified));    
             })
-
+            };
         });
 
         this.app.get('/api/music/get/masterplayer', (req, res) => {
@@ -194,9 +197,12 @@ class Server {
 
         this.app.get('/api/music/get/playlists', (req, res) => {
             this.squeeze.request("", ["playlists", "0", "100"], function (sqeezeResult) {
-                var stringified = JSON.stringify(sqeezeResult.result);
-                //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                res.json(JSON.parse(stringified));
+                 if (sqeezeResult != null && sqeezeResult.result != null) {
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                 }
+
             });
 
         });
@@ -206,7 +212,7 @@ class Server {
             var realPlayer = this.getMasterPlayer();
 
             realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
-                console.dir(sqeezeResult);
+                //console.dir(sqeezeResult);
                 var stringified = JSON.stringify(sqeezeResult.result);
                 if (stringified != null) {
                     stringified = stringified.replace(/playlist index/g, 'playlist_index');
@@ -227,7 +233,7 @@ class Server {
             var to = req.params.to;
 
             realPlayer.getPlaylist(from, to, function (sqeezeResult) {
-                console.dir(sqeezeResult);
+                //console.dir(sqeezeResult);
                 var stringified = JSON.stringify(sqeezeResult.result);
                 if (stringified != null) {
                     stringified = stringified.replace(/playlist index/g, 'playlist_index');
@@ -244,7 +250,7 @@ class Server {
 
         this.app.get('/api/music/command/:cmdid', (req, res) => {
 
-            console.log(req.params.cmdid);
+            //console.log(req.params.cmdid);
 
             var command = req.params.cmdid;
 

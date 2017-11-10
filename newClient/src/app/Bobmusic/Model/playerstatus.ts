@@ -13,5 +13,7 @@ export class Playerstatus {
         playlist_repeat: number;
         playlist_cur_index: number;
         time: string;
+        sync_master: string;
+        sync_slaves: string;
 
 }

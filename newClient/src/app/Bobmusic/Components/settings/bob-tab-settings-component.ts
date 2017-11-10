@@ -45,12 +45,16 @@ export class BobTabSettingsComponent implements OnInit, OnChanges {
             .catch(res => this.callError(res));
     }
 
+    onResetConfig(){
+        this.musicService.resetServer();
+    }
+
     onSave() {
         this.musicService.setBaseUrl(this.serverIp, this.serverPort);
     }
 
     callError(reason) {
-        console.warn('war wohl nix' + reason);
+        //console.warn('war wohl nix' + reason);
         this.status = 2;
 
     }

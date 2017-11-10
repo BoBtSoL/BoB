@@ -61,14 +61,14 @@ export class BobVolumeControl implements OnInit, OnChanges {
     }
 
     onSliderChange() {
-        console.warn('changed om sliderchange!');
+        //console.warn('changed om sliderchange!');
     }
 
     setValuesCorrect(playerStatus: Playerstatus) {
         if (this.playerStatus != null) {
             this.value = this.playerStatus.mixer_volume;
             this.myModel = this.playerStatus.mixer_volume;
-            console.warn('set value in Master! ' + this.value + ' wow ' + this.myModel);
+            //console.warn('set value in Master! ' + this.value + ' wow ' + this.myModel);
             this.ready = true;
         }
     }
@@ -83,7 +83,7 @@ export class BobVolumeControl implements OnInit, OnChanges {
     }
 
     ngOnChanges() {
-        console.warn('changed!');
+        //console.warn('changed!');
     }
 
 

@@ -32,9 +32,9 @@ export class BobTabPlaylistsComponent implements OnInit, OnChanges {
 
     showResults() {
         if (this.playlistroot == null) {
-            console.warn('Keine Playlisten gefunden');
+            //console.warn('Keine Playlisten gefunden');
         } else {
-            console.warn('wuhu, found ' + this.playlistroot.count);
+            //console.warn('wuhu, found ' + this.playlistroot.count);
             this.playlists = this.playlistroot.playlists_loop;
         }
     }

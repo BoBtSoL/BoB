@@ -76,24 +76,24 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     checkForChanges(playerstatus: Playerstatus) {
-        console.warn('in checkForChanges');
+        //console.warn('in checkForChanges');
         let changed = false;
         if (this.model == null) {
             this.model = playerstatus;
             changed = true;
-            console.warn('Changed ist true.');
+            //console.warn('Changed ist true.');
         }
 
         if (this.model != null) {
             if (playerstatus != null) {
                 const currIndex = Number(this.model.playlist_cur_index);
-                const newIndex = Number(this.model.playlist_cur_index);
+                const newIndex = Number(playerstatus.playlist_cur_index);
 
                 const currTracks = Number(this.model.playlist_tracks);
                 const newTracks = Number(playerstatus.playlist_tracks);
                 if (currIndex !== newIndex || currTracks !== newTracks) {
                     changed = true;
-                    console.warn('Index hat sich verschoben, change ist ebenfalls true');
+                    //console.warn('Index hat sich verschoben, change ist ebenfalls true');
                 }
             }
         }
@@ -113,7 +113,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
 
 
     recreatePlaylistForReal(newSongInfo: Songinfo[], forceRecreate: boolean) {
-        console.warn('in real recalculation');
+        // console.warn('in real recalculation');
         let changedLocal: boolean;
 
         changedLocal = false;
@@ -121,10 +121,16 @@ export class BobTabMainComponent implements OnChanges, OnInit {
         // Erkennen von Änderungen für Performance...
         if (this.currentplay != null && this.currentplay[0] != null && forceRecreate === false) {
             let newNowPlaying: Songinfo;
-            const sliceFrom = Number(this.model.playlist_cur_index);
-            const sliceTo = Number(this.model.playlist_cur_index) + 1;
+            for (const currSongInfo of newSongInfo) {
+                if (this.intVal(currSongInfo.playlist_index) === this.intVal(this.model.playlist_cur_index)) {
+                    newNowPlaying = currSongInfo;
+                }
+            }
 
-            newNowPlaying = newSongInfo.slice(sliceFrom, sliceTo)[0];
+            // const sliceFrom = Number(this.model.playlist_cur_index);
+            // const sliceTo = Number(this.model.playlist_cur_index) + 1;
+
+            // newNowPlaying = newSongInfo.slice(sliceFrom, sliceTo)[0];
             if (newNowPlaying != null) {
                 if (newNowPlaying.id == this.currentplay[0].id) {
                     changedLocal = false;
@@ -139,7 +145,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
             const currIndex = this.intVal(this.model.playlist_cur_index);
             // this.nextToPlay = [];
             if (currIndex === 0) {
-                console.warn('Index 0, set lastplayed to null');
+                // console.warn('Index 0, set lastplayed to null');
                 this.currentplay = newSongInfo.slice(0, 1);
                 this.currentplay_single = newSongInfo.slice(0, 1)[0];
                 this.lastPlayed = [];
@@ -150,9 +156,9 @@ export class BobTabMainComponent implements OnChanges, OnInit {
                 let tmpCurrentPlay: Songinfo[];
                 let tmpNextToPlay: Songinfo[];
 
-                tmpLastPlayed =[];
-                tmpCurrentPlay=[];
-                tmpNextToPlay=[];
+                tmpLastPlayed = [];
+                tmpCurrentPlay = [];
+                tmpNextToPlay = [];
 
                 for (const currSongInfo of newSongInfo) {
                     if (this.intVal(currSongInfo.playlist_index) < this.intVal(this.model.playlist_cur_index)) {
@@ -182,7 +188,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
             if (this.model.time != null && this.currentplay_single.duration != null) {
                 let total: number;
                 let current: number;
-                console.warn('vorm Rechnen');
+                // console.warn('vorm Rechnen');
                 const durationString = String(this.currentplay_single.duration);
                 const timeString = this.model.time;
 
@@ -193,7 +199,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
                     this.progress = (current / total) * 100;
                     this.progress = Number(this.progress.toString().split('.')[0]);
                     this.progressString = this.progress.toString();
-                    console.warn('Errechnet ' + this.progress);
+                    // console.warn('Errechnet ' + this.progress);
                 } else {
                     this.progress = 0;
                     this.progressString = '0';
@@ -204,7 +210,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     recalculatePlaylist(foreRecreate: boolean) {
-        console.warn('in recalulate playlist');
+        //console.warn('in recalulate playlist');
         let currentPlaylistIndex = -1;
         if (this.model != null) {
             currentPlaylistIndex = Number(this.model.playlist_cur_index);

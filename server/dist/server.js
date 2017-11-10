@@ -200,10 +200,14 @@ var Server = function () {
 
             this.app.get('/api/music/status', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
-                realPlayer.getStatus(function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
-                });
+                if (realPlayer == null) {
+                    res.statusCode = 500;
+                } else {
+                    realPlayer.getStatus(function (sqeezeResult) {
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
+                    });
+                };
             });
 
             this.app.get('/api/music/get/masterplayer', function (req, res) {
@@ -232,9 +236,11 @@ var Server = function () {
 
             this.app.get('/api/music/get/playlists', function (req, res) {
                 _this.squeeze.request("", ["playlists", "0", "100"], function (sqeezeResult) {
-                    var stringified = JSON.stringify(sqeezeResult.result);
-                    //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
+                    if (sqeezeResult != null && sqeezeResult.result != null) {
+                        var stringified = JSON.stringify(sqeezeResult.result);
+                        //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                        res.json(JSON.parse(stringified));
+                    }
                 });
             });
 
@@ -242,7 +248,7 @@ var Server = function () {
                 var realPlayer = _this.getMasterPlayer();
 
                 realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
-                    console.dir(sqeezeResult);
+                    //console.dir(sqeezeResult);
                     var stringified = JSON.stringify(sqeezeResult.result);
                     if (stringified != null) {
                         stringified = stringified.replace(/playlist index/g, 'playlist_index');
@@ -261,7 +267,7 @@ var Server = function () {
                 var to = req.params.to;
 
                 realPlayer.getPlaylist(from, to, function (sqeezeResult) {
-                    console.dir(sqeezeResult);
+                    //console.dir(sqeezeResult);
                     var stringified = JSON.stringify(sqeezeResult.result);
                     if (stringified != null) {
                         stringified = stringified.replace(/playlist index/g, 'playlist_index');
@@ -276,7 +282,7 @@ var Server = function () {
 
             this.app.get('/api/music/command/:cmdid', function (req, res) {
 
-                console.log(req.params.cmdid);
+                //console.log(req.params.cmdid);
 
                 var command = req.params.cmdid;
 

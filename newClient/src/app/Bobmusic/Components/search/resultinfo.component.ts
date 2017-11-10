@@ -33,7 +33,10 @@ export class ResultInfoComponent {
     ) { }
 
     playNow() {
-        this.musicService.playNow(this.comment.id);
+
+        this.musicService.addToPlaylist(this.comment.id).then( result => this.musicService.next());
+
+        //this.musicService.playNow(this.comment.id);
     }
 
     addToPlaylist() {

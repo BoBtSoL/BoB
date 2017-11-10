@@ -1,10 +1,12 @@
 <div class="card transparend-card" *ngIf="playerstatus">
     <div class="card-header text-center">
-        Playerinformationen
+        Playerstatus
     </div>
     <div class="card-block">
         <p>Name: {{playerstatus.player_name}}</p>
         <p>Seq_no: {{playerstatus.seq_no}}
         <p>Mode: {{playerstatus.mode}}</p>
+        <p>Sync Master {{getSyncMaster()}}</p>
+        <p>Sync Slaves {{getSyncSlaves()}}</p>
     </div>
 </div>
