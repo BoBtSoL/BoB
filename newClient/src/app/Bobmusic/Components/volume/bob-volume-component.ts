@@ -1,5 +1,7 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+
 import { MusicService } from '../../Services/music.service';
 
 import { Playerstatus } from '../../Model/playerstatus';
@@ -31,11 +33,11 @@ import { Songinfo } from '../../Model/songinfo';
 </div>
 
 
-    `,
-    providers: [MusicService]
+    `
 })
 export class BobVolumeControl implements OnInit, OnChanges {
     @Input() isMaster: boolean;
+    subscription: Subscription;
 
     max = 100;
     min = 0;
@@ -52,7 +54,13 @@ export class BobVolumeControl implements OnInit, OnChanges {
 
     constructor(
         private musicService: MusicService
-    ) { }
+    ) {
+    this.subscription = this.musicService.masterVolumeChanged$.subscribe(
+        mission => {
+            console.warn('mission');
+            this.reIninit();
+        });
+    }
 
     isMasterPlayer() {
         if (this.isMaster != null) {
@@ -74,6 +82,15 @@ export class BobVolumeControl implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        if (this.isMaster === true) {
+            this.musicService.getMasterPlayer().then(playerStatus => {
+                this.playerStatus = playerStatus;
+                this.setValuesCorrect(playerStatus);
+            });
+        }
+    }
+
+    reIninit() {
         if (this.isMaster === true) {
             this.musicService.getMasterPlayer().then(playerStatus => {
                 this.playerStatus = playerStatus;

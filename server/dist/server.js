@@ -32,6 +32,10 @@ var _jayson = require('jayson');
 
 var _jayson2 = _interopRequireDefault(_jayson);
 
+var _wsserver = require('./wsserver');
+
+var _wsserver2 = _interopRequireDefault(_wsserver);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48,9 +52,20 @@ var Server = function () {
         //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
         this.dataFile = _path2.default.join(__dirname, '../data.json');
         this.configreMasterAndSlave(this);
+        this.wsserver = new _wsserver2.default();
     }
 
     _createClass(Server, [{
+        key: 'notifychange',
+        value: function notifychange(sender) {
+            this.wsserver.notifyChanged(sender);
+        }
+    }, {
+        key: 'notifyVolumeChange',
+        value: function notifyVolumeChange() {
+            this.wsserver.notifyVolumeChanged();
+        }
+    }, {
         key: 'resetServerAndPlayers',
         value: function resetServerAndPlayers() {
             this.squeeze = new _squeezenode2.default(this.serverUrl, 9000);
@@ -225,7 +240,9 @@ var Server = function () {
             this.app.get('/api/music/get/slaveplayer', function (req, res) {
                 var realPlayer = _this.getSlavePlayer();
                 if (realPlayer == null) {
-                    //doof
+                    var response = '';
+                    response = JSON.stringify(response);
+                    res.json(JSON.parse(response));
                 } else {
                     realPlayer.getStatus(function (sqeezeResult) {
                         var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
@@ -280,11 +297,12 @@ var Server = function () {
                 });
             });
 
-            this.app.get('/api/music/command/:cmdid', function (req, res) {
+            this.app.get('/api/music/command/:cmdid/:sender', function (req, res) {
 
                 //console.log(req.params.cmdid);
 
                 var command = req.params.cmdid;
+                var sender = req.params.sender;
 
                 var realPlayer = _this.getMasterPlayer();
 
@@ -292,6 +310,7 @@ var Server = function () {
                     realPlayer.playRandom('tracks', function (sqeezeResult) {
                         var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                         res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
                     });
                 }
 
@@ -301,6 +320,7 @@ var Server = function () {
                         realPlayer.getStatus(function (sqeezeResult2) {
                             var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
                             res.json(JSON.parse(stringified));
+                            outerThis.notifychange(sender);
                         });
                     });
                 }
@@ -309,20 +329,27 @@ var Server = function () {
                     realPlayer.pause(function (sqeezeResult) {
                         var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                         res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
                     });
                 }
 
                 if (command == 'next') {
                     realPlayer.next(function (sqeezeResult) {
-                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                        res.json(JSON.parse(stringified));
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                            res.json(JSON.parse(stringified));
+                            outerThis.notifychange(sender);
+                        });
                     });
                 }
 
                 if (command == 'prev') {
                     realPlayer.previous(function (sqeezeResult) {
-                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                        res.json(JSON.parse(stringified));
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                            res.json(JSON.parse(stringified));
+                            outerThis.notifychange(sender);
+                        });
                     });
                 }
 
@@ -373,6 +400,7 @@ var Server = function () {
                 realPlayer.setVolume(command, function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifyVolumeChange();
                 });
             });
 
@@ -383,6 +411,7 @@ var Server = function () {
                 realPlayer.playIndex(command, function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
 
@@ -393,6 +422,7 @@ var Server = function () {
                 _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
 
@@ -403,6 +433,7 @@ var Server = function () {
                 _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
 
@@ -413,6 +444,7 @@ var Server = function () {
                 _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
 
@@ -423,6 +455,7 @@ var Server = function () {
                 _this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
 
@@ -450,6 +483,7 @@ var Server = function () {
             this.configureCORS();
             this.configureRoutes();
             this.listen(this.app.get('port'));
+            this.wsserver.doit();
         }
     }]);
 

@@ -5,9 +5,9 @@ import path from 'path';
 // import multer from 'multer';
 import SqueezeServer from 'squeezenode';
 import Jayson from 'jayson';
+import WsServer from './wsserver';
 
 class Server {
-
 
     constructor() {
         this.app = express();
@@ -18,8 +18,16 @@ class Server {
         //this.masterPlayer = this.squeeze.getPlayers(this.extractMasterPlayer);
         this.dataFile = path.join(__dirname, '../data.json');
         this.configreMasterAndSlave(this);
+        this.wsserver = new WsServer();
     }
 
+    notifychange(sender) {
+        this.wsserver.notifyChanged(sender);
+    }
+
+    notifyVolumeChange(){
+        this.wsserver.notifyVolumeChanged();
+    }
 
     resetServerAndPlayers() {
         this.squeeze = new SqueezeServer(this.serverUrl, 9000);
@@ -186,7 +194,9 @@ class Server {
         this.app.get('/api/music/get/slaveplayer', (req, res) => {
             var realPlayer = this.getSlavePlayer();
             if (realPlayer == null) {
-                //doof
+                var response = '';
+                response = JSON.stringify(response);
+                res.json(JSON.parse(response));
             } else {
                 realPlayer.getStatus(function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
@@ -248,11 +258,12 @@ class Server {
 
         });
 
-        this.app.get('/api/music/command/:cmdid', (req, res) => {
+        this.app.get('/api/music/command/:cmdid/:sender', (req, res) => {
 
             //console.log(req.params.cmdid);
 
             var command = req.params.cmdid;
+            var sender = req.params.sender;
 
             var realPlayer = this.getMasterPlayer();
 
@@ -260,8 +271,8 @@ class Server {
                 realPlayer.playRandom('tracks', function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange(sender);
                 });
-
             }
 
             if (command == 'play') {
@@ -270,30 +281,36 @@ class Server {
                     realPlayer.getStatus(function (sqeezeResult2) {
                         var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
                         res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
                     });
-
                 });
-
             }
 
             if (command == 'pause') {
                 realPlayer.pause(function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifychange(sender);
                 });
             }
 
             if (command == 'next') {
                 realPlayer.next(function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                        res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
+                    });
                 });
             }
 
             if (command == 'prev') {
                 realPlayer.previous(function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                        res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
+                    });
                 });
             }
 
@@ -350,6 +367,7 @@ class Server {
             realPlayer.setVolume(command, function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifyVolumeChange();
             });
         });
 
@@ -360,7 +378,9 @@ class Server {
             realPlayer.playIndex(command, function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifychange();
             });
+            
         });
 
         this.app.get('/api/music/set/masterplayer/addtoplaylist/:trackid', (req, res) => {
@@ -370,7 +390,9 @@ class Server {
             this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifychange();
             });
+            
 
         });
 
@@ -381,7 +403,9 @@ class Server {
             this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "track_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifychange();
             });
+            
 
         });
 
@@ -392,7 +416,9 @@ class Server {
             this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:insert", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifychange();
             });
+            
 
         });
 
@@ -403,6 +429,7 @@ class Server {
             this.squeeze.request(realPlayer.playerId, ["playlistcontrol", "cmd:load", "playlist_id:" + trackid, "play_index:0"], function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifychange();
             });
 
         });
@@ -430,6 +457,7 @@ class Server {
         this.configureCORS();
         this.configureRoutes();
         this.listen(this.app.get('port'));
+        this.wsserver.doit();
     }
 }
 

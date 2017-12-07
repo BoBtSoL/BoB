@@ -28,6 +28,11 @@
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.card-middle{
+  background-color: rgba(24,24,24,1)!important;
+  border: 1px solid rgba(0,0, 0, 0.125);
+}
+
 
 .material-icons {
   font-family: 'Material Icons';
@@ -72,6 +77,14 @@
 
 .md-24{
   font-size: 24px;
+}
+
+.md-48{
+  font-size: 48px;
+}
+
+.md-72{
+  font-size: 72px;
 }
 
 .md-slider-horizontal {
@@ -120,4 +133,90 @@ top: 0;
 left: 0;
 min-width: 100%;
 min-height: 1280px;
+}
+
+md-spinner-small {
+  width: 12px !important; 
+  height: 12px !important; 
+  margin: 5px 10px 0px 0px !important;
+}
+
+.material-icons {
+  vertical-align: middle !important;
+  padding-bottom: 3px;
+}
+
+.right-float{
+  float: right;
+}
+
+.left-left{
+  float: left;
+}
+
+.left-align{
+  text-align: left !important;
+}
+
+.right-align{
+  text-align: right !important;
+}
+
+.center-align{
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.modal {
+  text-align: center;
+}
+
+.modal::before {
+  content: "";      
+  display: inline-block;
+  height: 100%;    
+  margin-right: -4px;
+  vertical-align: middle;
+}
+
+.modal-dialog { 
+  display: inline-block;  
+  vertical-align: middle;
+}
+
+.footer {
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+}
+
+.fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }

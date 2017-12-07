@@ -1,6 +1,5 @@
 <div class="col-sm-12">
     <br>
-
     <div class="card complete-transparend">
         <div class="card-header text-center">
             Suche
@@ -15,10 +14,14 @@
             </div>
         </div>
 
-        <div *ngIf="resultsFound()==true">
+        <div class="card-block" *ngIf="searching==true">
+                <md-spinner></md-spinner>
+          </div>
+
+        <div *ngIf="resultsFound()==true && searching==false">
             <resulinfo-component *ngFor="let comment of resultListSplit" [comment]="comment"></resulinfo-component>
         </div>
-        <div *ngIf="resultsFound()==false">
+        <div *ngIf="resultsFound()==false && searching==false">
             <div class="card transparend-card">
                 <div class="card-block">
                     <p class="card-text">
@@ -29,3 +32,4 @@
         </div>
     </div>
 </div>
+

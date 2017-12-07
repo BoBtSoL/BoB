@@ -4,13 +4,17 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Playerstatus } from '../Model/playerstatus';
 import { Player } from '../Model/player';
+import { Guid } from '../Model/guid';
 import { PlaylistsLoopRoot } from '../Model/playlistslooproot';
 import { SyncGroupRoot } from '../Model/syncgrouproot';
 import { Songinfo } from '../Model/songinfo';
 import { SongSearchResult } from '../Model/songs-search-result';
 import { Serveronline } from '../Model/serveronline';
+import { Message } from '../Model/message';
 import { Observable } from 'rxjs/Rx';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/toPromise';
+import * as io from 'socket.io-client';
 
 // Import RxJs required methods
 import 'rxjs/add/operator/map';
@@ -19,11 +23,13 @@ import 'rxjs/add/operator/catch';
 @Injectable()
 export class MusicService {
 
-    //baseUrl = 'http://192.168.1.67:3000';
-    baseUrl = 'http://192.168.42.1:3000';
-    //baseServerUrl = '192.168.1.67';
+    //baseUrl = 'http://192.168.0.18:3000';
     baseServerUrl = '192.168.42.1';
+    baseUrl = 'http://192.168.42.1:3000';
+    wsport = '3001';
     baseServerPort = 3000;
+
+    //baseServerUrl = '192.168.0.18';
 
     // private instance variable to hold base url
     private commentsUrl = this.baseUrl + '/api/comments';
@@ -49,7 +55,22 @@ export class MusicService {
     private getAllPlayersUrl = this.baseUrl + '/api/music/players/get';
     private getPlaylistsUrl = this.baseUrl + '/api/music/get/playlists';
 
+    private socket;
+
     private statusSuffix = '/api/server/status';
+
+    public guid = Guid.newGuid();
+
+    // Observable string sources
+    private masterVolumeChangedSource = new Subject<string>();
+    private slaveVolumeChangedSource = new Subject<string>();
+    private playlistChangeSource = new Subject<string>();
+
+    // Observable string streams
+    masterVolumeChanged$ = this.masterVolumeChangedSource.asObservable();
+    laveVolumeChanged$ = this.slaveVolumeChangedSource.asObservable();
+    playlistChange$ = this.playlistChangeSource.asObservable();
+
     // Resolve HTTP using the constructor
     constructor(private http: Http) { }
 
@@ -90,39 +111,47 @@ export class MusicService {
     }
 
     next(): Promise<Playerstatus> {
-        return this.http.get(this.commandUrl + 'next').toPromise()
-            .then(response => response.json() as Playerstatus)
+        this.playlistChanged('show');
+        return this.http.get(this.commandUrl + 'next' + '/' + this.guid).toPromise()
+             .then(response => response.json() as Playerstatus)
+            //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
 
     prev(): Promise<Playerstatus> {
-        return this.http.get(this.commandUrl + 'prev').toPromise()
+        this.playlistChanged('show');
+        return this.http.get(this.commandUrl + 'prev' + '/' + this.guid).toPromise()
             .then(response => response.json() as Playerstatus)
+            //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
 
 
     startPlay(): Promise<Playerstatus> {
-        return this.http.get(this.commandUrl + 'play').toPromise()
+        //this.playlistChanged('show');
+        return this.http.get(this.commandUrl + 'play' + '/' + this.guid).toPromise()
             .then(response => response.json() as Playerstatus)
+            //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
 
     startPause(): Promise<Playerstatus> {
-        return this.http.get(this.commandUrl + 'pause').toPromise()
+        //this.playlistChanged('show');
+        return this.http.get(this.commandUrl + 'pause' + '/' + this.guid).toPromise()
             .then(response => response.json() as Playerstatus)
+            //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
 
 
     startPlayRanom(): Promise<Playerstatus> {
-        return this.http.get(this.commandUrl + 'playrandom').toPromise()
+        return this.http.get(this.commandUrl + 'playrandom' + '/' + this.guid).toPromise()
             .then(response => response.json() as Playerstatus)
             .catch(this.handleError);
     }
 
     getPlaylist(): Promise<Songinfo[]> {
-        return this.http.get(this.playlistUrl).toPromise()
+        return this.http.get(this.playlistUrl + '/' + this.guid).toPromise()
             .then(response => response.json() as Songinfo[])
             .catch(this.handleError);
     }
@@ -146,8 +175,10 @@ export class MusicService {
     }
 
     setMasterPlayerPlayPlaylistId(id): Promise<Playerstatus> {
+        this.playlistChanged('show');
         return this.http.get(this.masterPlayerPlayPlaylistId + id).toPromise()
             .then(response => response.json() as Playerstatus)
+            //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
 
@@ -182,15 +213,15 @@ export class MusicService {
     }
 
     playNow(id: number): Promise<Playerstatus> {
-       return this.http.get(this.addTrackUrl + id).toPromise()
+        return this.http.get(this.addTrackUrl + id).toPromise()
             .then(response => {
-                 response.json() as Playerstatus;
-               return this.next();
-                })
+                response.json() as Playerstatus;
+                return this.next();
+            })
             .catch(this.handleError);
 
-       // return this.http.get(this.playTrackNowUrl + id).toPromise()
-         //   .then(response => response.json() as Playerstatus)
+        // return this.http.get(this.playTrackNowUrl + id).toPromise()
+        //   .then(response => response.json() as Playerstatus)
         //    .catch(this.handleError);
     }
 
@@ -214,7 +245,7 @@ export class MusicService {
 
     resetServer() {
         this.http.get(this.resetUrl).toPromise()
-        .then(response => response.json() as Playerstatus);
+            .then(response => response.json() as Playerstatus);
     }
 
     getAllPlayers(): Promise<Player[]> {
@@ -229,10 +260,38 @@ export class MusicService {
             .catch(this.handleError);
     }
 
+    getMessages() {
+        let observable = new Observable(observer => {
+            this.socket = io(this.baseServerUrl + ':' + this.wsport);
+            this.socket.on('message', (data) => {
+                let myObject = <Message>data;
+                if (myObject.sender != null) {
+                    if (data.sender === this.guid) {
+                        console.warn('Guids sind gleich');
+                    } else {
+                        console.warn('Guids sind NICHT gleich');
+                        observer.next(data);
+                    }
+                } else {
+                    console.warn('Kein sender');
+                    observer.next(data);
+                }
+            });
+            return () => {
+                this.socket.disconnect();
+            };
+        });
+
+        return observable;
+    }
+
+
+
     private handleError(error: any): Promise<any> {
         //console.error('An error occurred', error); // for demo purposes only
         return Promise.reject(error.message || error);
     }
+
     // Fetch all existing comments
     getComments(): Observable<Comment[]> {
         // ...using get request
@@ -243,5 +302,16 @@ export class MusicService {
             .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     }
 
+    masterVolumeChanged(command: string) {
+        this.masterVolumeChangedSource.next(command);
+    }
+
+    slaveVolumeChanged(command: string) {
+        this.slaveVolumeChangedSource.next(command);
+    }
+
+    playlistChanged(command: string) {
+        this.playlistChangeSource.next(command);
+    }
 
 }

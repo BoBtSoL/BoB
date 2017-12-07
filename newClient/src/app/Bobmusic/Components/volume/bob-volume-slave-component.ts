@@ -65,7 +65,7 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     }
 
     setValuesCorrect() {
-        if (this.playerStatus != null) {
+        if (this.playerStatus != null && this.playerStatus.mixer_volume!=null) {
             this.value = this.playerStatus.mixer_volume;
             this.myModel = this.playerStatus.mixer_volume;
             //console.warn('set value!');

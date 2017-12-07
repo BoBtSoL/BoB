@@ -19,6 +19,7 @@ import { BobTabPlaylistsComponent } from './Components/playlists/bob-tab-playlis
 import { BobPlaylistsDetailComponent } from './Components/playlists/bob-playlists-detail-component';
 import { BobPlayerComponent } from './Components/status/bob-player-component';
 import { BobPlayerStatusComponent } from './Components/status/bob-player-status-component';
+import { BobModalComponent } from './Components/modal/modal.component';
 
 import { MusicService } from './Services/music.service';
 
@@ -46,7 +47,8 @@ import { MusicService } from './Services/music.service';
     BobTabPlaylistsComponent,
     BobPlaylistsDetailComponent,
     BobPlayerComponent,
-    BobPlayerStatusComponent
+    BobPlayerStatusComponent,
+    BobModalComponent
   ],
 
   providers: [

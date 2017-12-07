@@ -8,18 +8,7 @@
             <div class="col col-sm-12 col-md-12 col-lg-12">
                 <md-tab-group>
                     <md-tab label="Main">
-
-                        <div class="row">
-                            <div class="col">
-                                <bob-volume-component [isMaster]=true></bob-volume-component>
-                            </div>
-                            <div class="col-sm-8 col-md-8">
-                                <bob-tab-main></bob-tab-main>
-                            </div>
-                            <div class="col">
-                                <bob-volume-slave-component [isMaster]=false></bob-volume-slave-component>
-                            </div>
-                        </div>
+                        <bob-tab-main></bob-tab-main>
                     </md-tab>
                     <md-tab label="Suche">
                         <bob-tab-search-component></bob-tab-search-component>
@@ -39,4 +28,5 @@
 
             </div>
         </div>
+
     </div>

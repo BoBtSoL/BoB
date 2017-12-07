@@ -9,14 +9,16 @@ import { SongSearchResult } from '../../Model/songs-search-result';
 
 @Component({
     selector: 'bob-tab-search-component',
-    templateUrl: './bob-tab-search-component.html',
-    providers: [MusicService]
+    templateUrl: './bob-tab-search-component.html'
+    // ,providers: [MusicService]
 })
 export class BobTabSearchComponent implements OnInit, OnChanges {
 
     band: string;
     titel: string;
     searchResult: SongSearchResult;
+
+    searching = false;
 
     status: number;
 
@@ -43,9 +45,12 @@ export class BobTabSearchComponent implements OnInit, OnChanges {
     }
 
     onSearch() {
+        this.searching = true;
+
         this.musicService.performeSongSearch(this.titel).then(result => {
             this.searchResult = result;
             this.showResults();
+            this.searching = false;
         });
 
     }
@@ -53,15 +58,15 @@ export class BobTabSearchComponent implements OnInit, OnChanges {
     showResults() {
         if (this.searchResult == null || this.searchResult.count === 0) {
             this.noResultFoundText = 'Keine Treffer: ' + this.titel;
-            //console.warn('war wohl nix!');
+            // console.warn('war wohl nix!');
         } else {
-            //console.warn('wuhu, found ' + this.searchResult.count);
+            // console.warn('wuhu, found ' + this.searchResult.count);
             this.resultListSplit = this.searchResult.titles_loop;
         }
     }
 
     callError(reason) {
-        //console.warn('war wohl nix' + reason);
+        // console.warn('war wohl nix' + reason);
         this.status = 2;
     }
 

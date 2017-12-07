@@ -1,5 +1,5 @@
 // Imports
-import { Component, EventEmitter, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs/Rx';
 
@@ -8,15 +8,21 @@ import { MusicService } from '../../Services/music.service';
 
 import { Playerstatus } from '../../Model/playerstatus';
 import { Songinfo } from '../../Model/songinfo';
+import { Message } from '../../Model/message';
+
+//import { BobModalComponent } from '../modal/modal.component';
+import { Subscription } from 'rxjs/Subscription';
 
 // Component decorator
 @Component({
     selector: 'bob-tab-main',
-    templateUrl: './bob-tab-main-component.html',
-    providers: [MusicService]
+    templateUrl: './bob-tab-main-component.html'
 })
 // Component class
 export class BobTabMainComponent implements OnChanges, OnInit {
+    // @ViewChild(BobModalComponent) bobModal: BobModalComponent;
+    subscription: Subscription;
+
     model: Playerstatus;
     anotherModel: Playerstatus;
     songInfoArr: Songinfo[];
@@ -25,18 +31,33 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     currentplay_single: Songinfo;
     nextToPlay: Songinfo[];
 
+    working: boolean;
+
     progress: number;
     progressString: string;
 
+    guid: string;
+
     lastplayedToShow = 3;
+    connection;
+
 
     // Constructor with injected service
     constructor(
         private musicService: MusicService
     ) {
+        this.working = false;
         this.progress = 10;
         this.anotherModel = new Playerstatus();
         this.anotherModel.mode = 'wow';
+        this.subscription = this.musicService.playlistChange$.subscribe(
+            change => {
+                if (change === 'show') {
+                    this.working = true;
+                } else {
+                    this.working = false;
+                }
+            });
     }
 
     isOnline() {
@@ -59,12 +80,12 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     next() {
-        this.musicService.next().then(serverstatus => this.model = serverstatus);
+        this.musicService.next().then(serverstatus => this.checkForChanges(serverstatus));
     }
 
-
     prev() {
-        this.musicService.prev().then(serverstatus => this.model = serverstatus);
+        //this.musicService.prev().then(serverstatus => this.model = serverstatus);
+        this.musicService.prev().then(serverstatus => this.checkForChanges(serverstatus));
     }
 
     play() {
@@ -76,12 +97,12 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     checkForChanges(playerstatus: Playerstatus) {
-        //console.warn('in checkForChanges');
+        // console.warn('in checkForChanges');
         let changed = false;
         if (this.model == null) {
             this.model = playerstatus;
             changed = true;
-            //console.warn('Changed ist true.');
+            // console.warn('Changed ist true.');
         }
 
         if (this.model != null) {
@@ -93,7 +114,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
                 const newTracks = Number(playerstatus.playlist_tracks);
                 if (currIndex !== newIndex || currTracks !== newTracks) {
                     changed = true;
-                    //console.warn('Index hat sich verschoben, change ist ebenfalls true');
+                    // console.warn('Index hat sich verschoben, change ist ebenfalls true');
                 }
             }
         }
@@ -109,8 +130,6 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     isNumeric(n: any): n is number | string {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
-
-
 
     recreatePlaylistForReal(newSongInfo: Songinfo[], forceRecreate: boolean) {
         // console.warn('in real recalculation');
@@ -210,7 +229,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     recalculatePlaylist(foreRecreate: boolean) {
-        //console.warn('in recalulate playlist');
+        // console.warn('in recalulate playlist');
         let currentPlaylistIndex = -1;
         if (this.model != null) {
             currentPlaylistIndex = Number(this.model.playlist_cur_index);
@@ -237,6 +256,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
                 });
             }
         }
+        this.working = false;
     }
 
     ngOnInit() {
@@ -249,6 +269,29 @@ export class BobTabMainComponent implements OnChanges, OnInit {
         // this.musicService.getPlaylist().then(result => this.songInfoArr = result);
         const tasksSubscription = this.musicService.getStatusRegular().subscribe(data => {
             this.checkForChanges(data);
+        });
+
+        this.guid = this.musicService.guid;
+
+        // WS-Connection:
+        this.connection = this.musicService.getMessages().subscribe(message => {
+            console.warn('message recieved');
+            const localMessage = <Message>message;
+            console.warn(localMessage.text);
+
+            if (localMessage.text != null) {
+                if (localMessage.text === 'VOLUMECHANGED') {
+                    this.musicService.masterVolumeChanged('VOLUMECHANGED');
+                } else if (localMessage.text === 'PLAYLISTCHANGED') {
+                    this.musicService.getStatus2().then(serverstatus => {
+                        this.model = serverstatus;
+                        this.recalculatePlaylist(true);
+                    });
+
+                }
+            }
+
+
         });
     }
 
