@@ -1,5 +1,6 @@
 // Imports
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 import { MusicService } from '../../Services/music.service';
 
 import { Playerstatus } from '../../Model/playerstatus';
@@ -30,11 +31,11 @@ import { Songinfo } from '../../Model/songinfo';
             </div>
 
 
-    `,
-    providers: [MusicService]
+    `
 })
 export class BobVolumeSlaveControl implements OnInit, OnChanges {
     @Input() isMaster: boolean;
+    subscription: Subscription;
 
     max = 100;
     min = 0;
@@ -46,13 +47,17 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     playerStatus: Playerstatus;
 
     clicked(event) {
-        //console.warn('wow. Clicked fired ' + this.myModel);
         this.musicService.setSlavePlayerVolume(this.myModel);
     }
 
     constructor(
         private musicService: MusicService
-    ) { }
+    ) {
+        this.subscription = this.musicService.slaveVolumeChanged$.subscribe(
+            mission => {
+                this.reInit();
+            });
+     }
 
     isMasterPlayer() {
         if (this.isMaster != null) {
@@ -65,7 +70,7 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     }
 
     setValuesCorrect() {
-        if (this.playerStatus != null && this.playerStatus.mixer_volume!=null) {
+        if (this.playerStatus != null && this.playerStatus.mixer_volume != null) {
             this.value = this.playerStatus.mixer_volume;
             this.myModel = this.playerStatus.mixer_volume;
             //console.warn('set value!');
@@ -74,6 +79,10 @@ export class BobVolumeSlaveControl implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        this.musicService.getSlavePlayer().then(playerStatus => { this.playerStatus = playerStatus; this.setValuesCorrect(); });
+    }
+
+    reInit() {
         this.musicService.getSlavePlayer().then(playerStatus => { this.playerStatus = playerStatus; this.setValuesCorrect(); });
     }
 

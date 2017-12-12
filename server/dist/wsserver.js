@@ -66,6 +66,11 @@ var WsServer = function () {
             this.io.emit('message', { type: 'new-message', text: 'VOLUMECHANGED' });
         }
     }, {
+        key: 'notifySlaveVolumeChanged',
+        value: function notifySlaveVolumeChanged() {
+            this.io.emit('message', { type: 'new-message', text: 'SLAVEVOLUMECHANGED' });
+        }
+    }, {
         key: 'listen',
         value: function listen() {
             this.http.listen(3001, function () {

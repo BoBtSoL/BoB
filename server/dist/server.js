@@ -66,6 +66,11 @@ var Server = function () {
             this.wsserver.notifyVolumeChanged();
         }
     }, {
+        key: 'notifySlaveVolumeChanged',
+        value: function notifySlaveVolumeChanged() {
+            this.wsserver.notifySlaveVolumeChanged();
+        }
+    }, {
         key: 'resetServerAndPlayers',
         value: function resetServerAndPlayers() {
             this.squeeze = new _squeezenode2.default(this.serverUrl, 9000);
@@ -466,6 +471,7 @@ var Server = function () {
                 realPlayer.setVolume(command, function (sqeezeResult) {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
+                    outerThis.notifySlaveVolumeChanged();
                 });
             });
         }

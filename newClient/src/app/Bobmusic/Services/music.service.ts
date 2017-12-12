@@ -24,12 +24,12 @@ import 'rxjs/add/operator/catch';
 export class MusicService {
 
     //baseUrl = 'http://192.168.0.18:3000';
+    //baseServerUrl = '192.168.0.18';
     baseServerUrl = '192.168.42.1';
     baseUrl = 'http://192.168.42.1:3000';
+
     wsport = '3001';
     baseServerPort = 3000;
-
-    //baseServerUrl = '192.168.0.18';
 
     // private instance variable to hold base url
     private commentsUrl = this.baseUrl + '/api/comments';
@@ -65,11 +65,13 @@ export class MusicService {
     private masterVolumeChangedSource = new Subject<string>();
     private slaveVolumeChangedSource = new Subject<string>();
     private playlistChangeSource = new Subject<string>();
+    private playerStatusChangeSource = new Subject<Playerstatus>();
 
     // Observable string streams
     masterVolumeChanged$ = this.masterVolumeChangedSource.asObservable();
-    laveVolumeChanged$ = this.slaveVolumeChangedSource.asObservable();
+    slaveVolumeChanged$ = this.slaveVolumeChangedSource.asObservable();
     playlistChange$ = this.playlistChangeSource.asObservable();
+    playerStatusChange$ = this.playerStatusChangeSource.asObservable();
 
     // Resolve HTTP using the constructor
     constructor(private http: Http) { }
@@ -113,7 +115,7 @@ export class MusicService {
     next(): Promise<Playerstatus> {
         this.playlistChanged('show');
         return this.http.get(this.commandUrl + 'next' + '/' + this.guid).toPromise()
-             .then(response => response.json() as Playerstatus)
+            .then(response => response.json() as Playerstatus)
             //.then(res => this.playlistChanged('hide'))
             .catch(this.handleError);
     }
@@ -312,6 +314,10 @@ export class MusicService {
 
     playlistChanged(command: string) {
         this.playlistChangeSource.next(command);
+    }
+
+    playerStatusChanged(playerStatus: Playerstatus) {
+        this.playerStatusChangeSource.next(playerStatus);
     }
 
 }

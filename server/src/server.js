@@ -29,6 +29,10 @@ class Server {
         this.wsserver.notifyVolumeChanged();
     }
 
+    notifySlaveVolumeChanged(){
+        this.wsserver.notifySlaveVolumeChanged();
+    }
+
     resetServerAndPlayers() {
         this.squeeze = new SqueezeServer(this.serverUrl, 9000);
         this.configreMasterAndSlave(this);
@@ -442,6 +446,7 @@ class Server {
             realPlayer.setVolume(command, function (sqeezeResult) {
                 var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                 res.json(JSON.parse(stringified));
+                outerThis.notifySlaveVolumeChanged();
             });
         });
     }

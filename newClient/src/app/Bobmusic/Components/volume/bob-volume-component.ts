@@ -57,8 +57,7 @@ export class BobVolumeControl implements OnInit, OnChanges {
     ) {
     this.subscription = this.musicService.masterVolumeChanged$.subscribe(
         mission => {
-            console.warn('mission');
-            this.reIninit();
+            this.reInit();
         });
     }
 
@@ -90,7 +89,7 @@ export class BobVolumeControl implements OnInit, OnChanges {
         }
     }
 
-    reIninit() {
+    reInit() {
         if (this.isMaster === true) {
             this.musicService.getMasterPlayer().then(playerStatus => {
                 this.playerStatus = playerStatus;

@@ -10,7 +10,6 @@ import { Playerstatus } from '../../Model/playerstatus';
 import { Songinfo } from '../../Model/songinfo';
 import { Message } from '../../Model/message';
 
-//import { BobModalComponent } from '../modal/modal.component';
 import { Subscription } from 'rxjs/Subscription';
 
 // Component decorator
@@ -22,6 +21,7 @@ import { Subscription } from 'rxjs/Subscription';
 export class BobTabMainComponent implements OnChanges, OnInit {
     // @ViewChild(BobModalComponent) bobModal: BobModalComponent;
     subscription: Subscription;
+    playerStatusSubscription: Subscription;
 
     model: Playerstatus;
     anotherModel: Playerstatus;
@@ -58,6 +58,12 @@ export class BobTabMainComponent implements OnChanges, OnInit {
                     this.working = false;
                 }
             });
+        this.playerStatusSubscription = this.musicService.playerStatusChange$.subscribe(
+            newstatus => {
+                this.checkForChanges(newstatus);
+                this.recalculatePlaylist(true);
+            }
+        );
     }
 
     isOnline() {
@@ -84,7 +90,6 @@ export class BobTabMainComponent implements OnChanges, OnInit {
     }
 
     prev() {
-        //this.musicService.prev().then(serverstatus => this.model = serverstatus);
         this.musicService.prev().then(serverstatus => this.checkForChanges(serverstatus));
     }
 
@@ -105,7 +110,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
             // console.warn('Changed ist true.');
         }
 
-        if (this.model != null) {
+        if (this.model != null && changed === false) {
             if (playerstatus != null) {
                 const currIndex = Number(this.model.playlist_cur_index);
                 const newIndex = Number(playerstatus.playlist_cur_index);
@@ -273,26 +278,7 @@ export class BobTabMainComponent implements OnChanges, OnInit {
 
         this.guid = this.musicService.guid;
 
-        // WS-Connection:
-        this.connection = this.musicService.getMessages().subscribe(message => {
-            console.warn('message recieved');
-            const localMessage = <Message>message;
-            console.warn(localMessage.text);
 
-            if (localMessage.text != null) {
-                if (localMessage.text === 'VOLUMECHANGED') {
-                    this.musicService.masterVolumeChanged('VOLUMECHANGED');
-                } else if (localMessage.text === 'PLAYLISTCHANGED') {
-                    this.musicService.getStatus2().then(serverstatus => {
-                        this.model = serverstatus;
-                        this.recalculatePlaylist(true);
-                    });
-
-                }
-            }
-
-
-        });
     }
 
     ngOnChanges() {

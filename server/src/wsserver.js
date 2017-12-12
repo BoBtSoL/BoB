@@ -34,7 +34,11 @@ class WsServer {
     }
 
     notifyVolumeChanged(){
-        this.io.emit('message', {type:'new-message', text: 'VOLUMECHANGED'})
+        this.io.emit('message', {type:'new-message', text: 'VOLUMECHANGED'});
+    }
+
+    notifySlaveVolumeChanged(){
+        this.io.emit('message', {type:'new-message', text: 'SLAVEVOLUMECHANGED'});
     }
 
     listen() {
