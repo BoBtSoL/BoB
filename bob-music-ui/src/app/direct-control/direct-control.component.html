@@ -1,0 +1,75 @@
+<br />
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-1">
+      <div class="card text-center text-white bg-danger">
+        <div class="card-header">
+          Red
+        </div>
+        <div class="card-body">
+          <mat-slider class="red-slider" [(ngModel)]="redValue" (change)="onSliderChange($event.value)" (input)="onChangingRed($event)"
+            vertical min="0" max="255" step="5"></mat-slider>
+        </div>
+        <div class="card-footer">
+          <p>{{redValue}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-1">
+      <div class="card text-center text-white bg-success">
+        <div class="card-header">
+          Green
+        </div>
+        <div class="card-body">
+          <mat-slider class="mat-slider-g" [(ngModel)]="greenValue" (change)="onSliderChange($event.value)" (input)="onChangingGreen($event)"
+            vertical min="0" max="255" step="5"></mat-slider>
+        </div>
+        <div class="card-footer">
+          <p>{{greenValue}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-1">
+      <div class="card text-center text-white bg-primary">
+        <div class="card-header">
+          Blue
+        </div>
+        <div class="card-body">
+          <mat-slider class="mat-slider-b" [(ngModel)]="blueValue" (change)="onSliderChange($event.value)" (input)="onChangingBlue($event)"
+            vertical min="0" max="255" step="5"></mat-slider>
+        </div>
+        <div class="card-footer">
+          <p>{{blueValue}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="card text-center bg-light transparend-card">
+        <div class="card-header">
+          Result
+        </div>
+        <div class="card-body">
+          <i [ngStyle]="{'color':getColor()}" class="material-icons mat-icon-big">wb_incandescent</i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+
+  <div>
+    <button (click)="startParty()">
+      Start Party
+    </button>
+    <button (click)="stopParty()">
+      Stop Party
+    </button>
+    <button (click)="startFading()">
+      start Fading
+    </button>
+  </div>
+
+</div>

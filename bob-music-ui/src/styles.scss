@@ -1,0 +1,234 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap-grid';
+
+/*@import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css"; */
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./iconfont/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url(./iconfont/MaterialIcons-Regular.woff2) format('woff2'),
+       url(./iconfont/MaterialIcons-Regular.woff) format('woff'),
+       url(./iconfont/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+@import '~@angular/material/theming';
+@include mat-core();
+/*$primary:  md-palette($md-grey, 500);*/
+$primary:  mat-palette($mat-red, 900);
+$accent: mat-palette($mat-red, 900); 
+$warn:    mat-palette($mat-red, 900);
+$theme: mat-dark-theme($primary, $accent, $warn);
+@include angular-material-theme($theme);
+
+  
+body{
+  color: #eaeaea;
+  background: #181818;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #262626;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+ }
+  
+  .card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: #262626;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+  }
+  
+  .card-middle{
+    background-color: rgba(24,24,24,1)!important;
+    border: 1px solid rgba(0,0, 0, 0.125);
+  }
+  
+
+
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }
+  
+  .red-color {
+      color:#b71c1c;
+  }
+  
+  .grey-color {
+      color:grey;
+  }
+  
+  .blue-color {
+      color:lightblue;
+  }
+  
+  .md-18{
+    font-size: 18px;
+  }
+  
+  .md-24{
+    font-size: 24px;
+  }
+  
+  .md-48{
+    font-size: 48px;
+  }
+  
+  .md-72{
+    font-size: 72px;
+  }
+
+  .mat-slider {
+    height: 256px;
+}
+
+.mat-accent .mat-slider-thumb,.mat-accent .mat-slider-thumb-label,.mat-accent .mat-slider-track-fill{
+  background-color:#000000;
+}
+
+  /*
+  .md-slider-horizontal {
+    width: 300px;
+  }
+  
+  .md-slider-vertical {
+    height: 300px;
+  }*/
+  
+  .complete-transparend{
+    background-color: rgba(255,255,255,0.0)!important;
+  }
+  
+  .transparend-card{
+    background-color: rgba(24,24,24,0.9)!important;
+    border: 1px solid rgba(0,0, 0, 0.125);
+  }
+  
+  .transparend-playlist-active-card{
+    background-color: rgba(24,24,24,0.9)!important;
+    border: 1px solid rgba(0,0, 0, 0.125);
+    color: #b71c1c;
+  }
+  
+  .transparend-card-header{
+    background-color: rgba(255,255,255,0.8)!important;
+    /*background-color: rgba(247, 247, 249,0.5)!important;*/
+  }
+  
+  .bob-input{
+    border-color: #d9534f !important;
+    background-color: #181818 !important;
+    color: #eaeaea !important;
+  }
+  
+  md-spinner-small {
+    width: 12px !important; 
+    height: 12px !important; 
+    margin: 5px 10px 0px 0px !important;
+  }
+  
+  .material-icons {
+    vertical-align: middle !important;
+    padding-bottom: 3px;
+  }
+  
+  .right-float{
+    float: right;
+  }
+  
+  .left-left{
+    float: left;
+  }
+  
+  .left-align{
+    text-align: left !important;
+  }
+  
+  .right-align{
+    text-align: right !important;
+  }
+  
+  .center-align{
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+  
+  .modal {
+    text-align: center;
+  }
+  
+  .modal::before {
+    content: "";      
+    display: inline-block;
+    height: 100%;    
+    margin-right: -4px;
+    vertical-align: middle;
+  }
+  
+  .modal-dialog { 
+    display: inline-block;  
+    vertical-align: middle;
+  }
+  
+  .footer {
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+  }
+  
+  .fa-spin {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+  }
+  .fa-pulse {
+    -webkit-animation: fa-spin 1s infinite steps(8);
+    animation: fa-spin 1s infinite steps(8);
+  }
+  @-webkit-keyframes fa-spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg);
+    }
+  }
+  @keyframes fa-spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(359deg);
+      transform: rotate(359deg);
+    }
+  }

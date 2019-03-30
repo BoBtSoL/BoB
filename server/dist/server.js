@@ -269,7 +269,7 @@ var Server = function () {
             this.app.get('/api/music/playlist', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
 
-                realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
+                realPlayer.getPlaylistExtendet(0, 10, function (sqeezeResult) {
                     //console.dir(sqeezeResult);
                     var stringified = JSON.stringify(sqeezeResult.result);
                     if (stringified != null) {

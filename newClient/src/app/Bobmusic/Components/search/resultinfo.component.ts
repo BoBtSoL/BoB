@@ -11,9 +11,13 @@ import { MusicService } from '../../Services/music.service';
 
 <div class="card transparend-card">
     <div class="card-block">
-        <p class="card-text">
+        <h5 class="card-title">
             {{comment.artist}} - {{comment.title}} 
+        </h5> 
+        <p class="card-text">
+            Album: {{comment.album}} 
         </p> 
+    
         <div>
             <button (click)="playNow()" type="button" [disabled]="addedStatus>0" class="btn btn-outline-danger">
                 PLAY NOW
@@ -24,10 +28,8 @@ import { MusicService } from '../../Services/music.service';
                 <i class="material-icons">warning</i> ...Arbeite...
             </span>
             <span *ngIf="addedStatus==2" class="text-success right-float">
-                <i class="material-icons">done</i> Erfolgreich hinzugefügt
+                <i class="material-icons">done</i> Erfolgreich
             </span>
-            
-            
 
         </div>
     </div>
