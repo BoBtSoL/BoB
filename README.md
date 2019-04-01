@@ -1,16 +1,12 @@
-## Scotch HTTP NG2
+## BoB repos
 
 
-### To start server
-```bash
-cd server
-npm install
-npm start
+### Current client
+```
+bob-music-ui
 ```
 
-### To start client
-```bash
-cd client
-npm install
-npm start
+### Current server
+```
+server
 ```
