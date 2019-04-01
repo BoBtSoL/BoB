@@ -1,0 +1,12 @@
+<div class="card text-center transparend-card">
+  <div class="card-header">
+    Vol. Master
+  </div>
+  <div class="card-block">
+    <mat-slider [(ngModel)]="sliderVal" (change)="onSliderChange($event.value)" (input)="onChanging($event)" vertical
+      min="0" max="100" step="1"></mat-slider>
+  </div>
+  <div class="card-footer">
+    <p>{{sliderVal}}</p>
+  </div>
+</div>

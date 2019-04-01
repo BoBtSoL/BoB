@@ -39,27 +39,19 @@ export class DirectControlComponent implements OnInit {
     fadingModel.toColors = {red: 0, green: 100, blue: 0 };
     fadingModel.seconds = 15;
 
-    this.rest.startFading(fadingModel).subscribe((result) => {
-      this.fadingStatus = result;
-    });
+    // this.rest.startFading(fadingModel).subscribe((result) => {
+    //  this.fadingStatus = result;
+    // });
   }
 
   getColor() {
     return this.color;
   }
 
-  stopParty() {
-    console.warn('Stop Party');
-    this.rest.stopParty(this.status).subscribe((result) => {
-      this.status = result;
-    });
-  }
-
   ngOnInit() {
     this.redValue = 0;
     this.greenValue = 0;
     this.blueValue = 0;
-    this.getStatus();
   }
 
   onSliderChange(event) {
@@ -114,18 +106,7 @@ export class DirectControlComponent implements OnInit {
       });
   }
 
-  getStatus() {
-    this.rest.getStatus().subscribe((data: Status) => {
-      this.status = data;
-      this.redValue = Number(data.colors.red);
-      this.greenValue = Number(data.colors.green);
-      this.blueValue = Number(data.colors.blue);
-      this.updateColor();
-    });
-  }
-
-
-  updateColor() {
+   updateColor() {
     const red = (Number(this.status.colors.red));
     const green = (Number(this.status.colors.green));
     const blue = (Number(this.status.colors.blue));

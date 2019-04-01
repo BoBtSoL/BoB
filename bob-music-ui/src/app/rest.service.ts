@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Status } from './model/status';
 import { Message } from './model/Message';
@@ -9,17 +9,27 @@ import { FadingModel } from './model/fading-model';
 import { FadingStatus } from './model/fading-status';
 import * as io from 'socket.io-client';
 
-// const baseEndpoint = 'http://localhost:8000/';
-// const baseWsUrl = 'http://localhost';
+import { Playerstatus } from './Model/playerstatus';
+import { Player } from './Model/player';
+import { Guid } from './Model/guid';
 
 const baseEndpoint = 'http://tsolrasp:8000/';
-const baseWsUrl = 'http://tsolrasp';
 const wsport = '3001';
+
+const baseServerUrl = '192.168.42.1';
+const baseUrl = 'http://192.168.42.1:3000';
+const musicUrl = baseUrl + '/api/music/status';
+
+
+const masterPlayerUrl = baseUrl + '/api/music/get/masterplayer';
+const slavePlayerUrl = baseUrl + '/api/music/get/slaveplayer';
+const masterPlayerSetVolumeUrl = baseUrl + '/api/music/set/masterplayer/volume/';
+const slavePlayerSetVolumeUrl = baseUrl + '/api/music/set/slaveplayer/volume/';
+
 
 const statusEndpoint = baseEndpoint + 'status';
 const colorsEndpoint = baseEndpoint + 'colors';
 const partyEndpoint = baseEndpoint + 'party';
-const fadeEndpoint = baseEndpoint + 'fading';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -35,11 +45,41 @@ export class RestService {
 
   private socket;
 
+  private masterVolumeChangedSource = new Subject<string>();
+  public masterVolumeChanged$ = this.masterVolumeChangedSource.asObservable();
+  private slaveVolumeChangedSource = new Subject<string>();
+  public slaveVolumeChanged$ = this.slaveVolumeChangedSource.asObservable();
+  private playlistChangeSource = new Subject<string>();
+  public playlistChange$ = this.playlistChangeSource.asObservable();
+  private playerStatusChangeSource = new Subject<Playerstatus>();
+  public playerStatusChange$ = this.playerStatusChangeSource.asObservable();
+
+
+  public guid = Guid.newGuid();
+
   constructor(private http: HttpClient) {
 
   }
 
-  getStatus(): Observable<Status> {
+  getMasterPlayer(): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(masterPlayerUrl).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getMasterPlayer'))
+    );
+  }
+
+  getSlavePlayer(): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(slavePlayerUrl).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getSlavePlayer'))
+    );
+  }
+
+  getStatusObservable(): Observable<Status> {
     return this.http.get<Status>(statusEndpoint).pipe(
       map(model => {
         return model;
@@ -48,59 +88,35 @@ export class RestService {
     );
   }
 
-  updateColors(colors: ColorModel): Observable<Status> {
-    return this.http.post<any>(colorsEndpoint, JSON.stringify(colors), httpOptions).pipe(
+  getStatus(): Observable<Playerstatus> {
+    return this.http.get<Status>(musicUrl).pipe(
       map(model => {
         return model;
       }),
-      catchError(this.handleError<any>('updateColors'))
+      catchError(this.handleError<any>('getStatus'))
     );
   }
 
-  // updateStatus(status: Status): Observable<Status> {
-  //   return this.http.post<any>(endpoint, JSON.stringify(status), httpOptions).pipe(
-  //     map(model => {
-  //       return model;
-  //     }),
-  //     catchError(this.handleError<any>('getStatus'))
-  //   );
-  // }
 
-  startParty(status: Status): Observable<Status> {
-    return this.http.post<any>(partyEndpoint, JSON.stringify(status), httpOptions).pipe(
+  setMasterPlayerVolume(volume): Observable<Playerstatus> {
+    return this.http.get<Status>(masterPlayerSetVolumeUrl + volume).pipe(
       map(model => {
         return model;
       }),
-      catchError(this.handleError<any>('startParty'))
+      catchError(this.handleError<any>('setMasterPlayerVolume'))
     );
   }
 
-  stopParty(status: Status): Observable<Status> {
-    return this.http.delete<any>(partyEndpoint, httpOptions).pipe(
+  setSlavePlayerVolume(volume): Observable<Playerstatus> {
+    return this.http.get<Status>(slavePlayerSetVolumeUrl + volume).pipe(
       map(model => {
         return model;
       }),
-      catchError(this.handleError<any>('stopParty'))
+      catchError(this.handleError<any>('setMasterPlayerVolume'))
     );
   }
 
-  startFading(fadingModel: FadingModel): Observable<FadingStatus> {
-    return this.http.post<any>(fadeEndpoint, JSON.stringify(fadingModel), httpOptions).pipe(
-      map(model => {
-        return model;
-      }),
-      catchError(this.handleError<any>('startFading'))
-    );
-  }
 
-  getFadingStatus(): Observable<FadingStatus> {
-    return this.http.get<any>(fadeEndpoint, httpOptions).pipe(
-      map(model => {
-        return model;
-      }),
-      catchError(this.handleError<any>('getFading'))
-    );
-  }
 
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
@@ -116,9 +132,9 @@ export class RestService {
     };
   }
 
-  getMessages() {
+  getMessagesOld() {
     const observable = new Observable(observer => {
-        this.socket = io(baseWsUrl + ':' + wsport);
+        this.socket = io(baseServerUrl + ':' + wsport);
         this.socket.on('message', (data) => {
             const myObject = <Message>data;
             console.warn('Message is da');
@@ -136,7 +152,42 @@ export class RestService {
     });
 
     return observable;
-}
+  }
 
+  getMessages() {
+    const observable = new Observable(observer => {
+        this.socket = io(baseServerUrl + ':' + wsport);
+        this.socket.on('message', (data) => {
+            const myObject = <Message>data;
+            if (myObject.sender != null) {
+                if (data.sender === this.guid) {
+                    console.warn('Guids sind gleich');
+                } else {
+                    console.warn('Guids sind NICHT gleich');
+                    observer.next(data);
+                }
+            } else {
+                console.warn('Kein sender');
+                observer.next(data);
+            }
+        });
+        return () => {
+            this.socket.disconnect();
+        };
+    });
+    return observable;
+  }
+
+  masterVolumeChanged(command: string) {
+    this.masterVolumeChangedSource.next(command);
+  }
+
+  slaveVolumeChanged(command: string) {
+    this.slaveVolumeChangedSource.next(command);
+  }
+
+  playerStatusChanged(playerStatus: Playerstatus) {
+    this.playerStatusChangeSource.next(playerStatus);
+  }
 
 }

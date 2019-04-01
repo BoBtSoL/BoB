@@ -9,13 +9,25 @@ import { AppComponent } from './app.component';
 import { MasterComponent } from './master/master.component';
 
 import { MatTabsModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material';
+import { MatProgressBarModule } from '@angular/material';
+import { MatIconModule } from '@angular/material';
+
 import { DirectControlComponent } from './direct-control/direct-control.component';
+import { VolumeMasterComponent } from './volume-master/volume-master.component';
+import { VolumeSlaveComponent } from './volume-slave/volume-slave.component';
+import { LayoutComponent } from './layout/layout.component';
+import { PlayerComponent } from './player/player.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MasterComponent,
-    DirectControlComponent
+    DirectControlComponent,
+    VolumeMasterComponent,
+    VolumeSlaveComponent,
+    LayoutComponent,
+    PlayerComponent
   ],
   imports: [
     FormsModule,
@@ -23,7 +35,10 @@ import { DirectControlComponent } from './direct-control/direct-control.componen
     HttpClientModule,
     BrowserAnimationsModule,
     MatSliderModule,
-    MatTabsModule
+    MatTabsModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
