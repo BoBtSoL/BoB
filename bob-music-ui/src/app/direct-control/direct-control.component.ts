@@ -27,9 +27,6 @@ export class DirectControlComponent implements OnInit {
 
   startParty() {
     console.warn('Start Party');
-    this.rest.startParty(this.status).subscribe((result) => {
-      this.status = result;
-    });
   }
   startFading() {
     console.warn('Start Fading');
@@ -62,10 +59,6 @@ export class DirectControlComponent implements OnInit {
       colorModel.blue = this.blueValue.toString();
       colorModel.green = this.greenValue.toString();
 
-      this.rest.updateColors(colorModel).subscribe((result) => {
-        this.status = result;
-        this.updateColor();
-    });
 
   }
 
@@ -76,10 +69,6 @@ export class DirectControlComponent implements OnInit {
     colorModel = new ColorModel();
     colorModel.red = this.redValue.toString();
     colorModel.blue = event.value;
-    colorModel.green = this.greenValue.toString();
-      this.rest.updateColors(colorModel).subscribe((result) => {
-        console.log(result);
-      });
   }
 
   onChangingGreen(event) {
@@ -89,9 +78,6 @@ export class DirectControlComponent implements OnInit {
     colorModel.red = this.redValue.toString();
     colorModel.blue = this.blueValue.toString();
     colorModel.green = event.value;
-      this.rest.updateColors(colorModel).subscribe((result) => {
-        console.log(result);
-      });
   }
 
   onChangingRed(event) {
@@ -101,9 +87,6 @@ export class DirectControlComponent implements OnInit {
     colorModel.red = event.value;
     colorModel.blue = this.blueValue.toString();
     colorModel.green = this.greenValue.toString();
-      this.rest.updateColors(colorModel).subscribe((result) => {
-        console.log(result);
-      });
   }
 
    updateColor() {

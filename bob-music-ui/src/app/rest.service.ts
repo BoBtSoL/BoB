@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, Subject } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-import { Status } from './model/status';
+import { Observable, of, Subject, fromEventPattern } from 'rxjs';
+import { map, catchError, tap, flatMap } from 'rxjs/operators';
+import { interval } from 'rxjs';
 import { Message } from './model/Message';
 import { ColorModel } from './model/color-model';
 import { FadingModel } from './model/fading-model';
@@ -10,6 +10,7 @@ import { FadingStatus } from './model/fading-status';
 import * as io from 'socket.io-client';
 
 import { Playerstatus } from './Model/playerstatus';
+import { Songinfo } from './Model/songinfo';
 import { Player } from './Model/player';
 import { Guid } from './Model/guid';
 
@@ -19,21 +20,20 @@ const wsport = '3001';
 const baseServerUrl = '192.168.42.1';
 const baseUrl = 'http://192.168.42.1:3000';
 const musicUrl = baseUrl + '/api/music/status';
-
+const commandUrl = baseUrl + '/api/music/command/';
 
 const masterPlayerUrl = baseUrl + '/api/music/get/masterplayer';
 const slavePlayerUrl = baseUrl + '/api/music/get/slaveplayer';
 const masterPlayerSetVolumeUrl = baseUrl + '/api/music/set/masterplayer/volume/';
 const slavePlayerSetVolumeUrl = baseUrl + '/api/music/set/slaveplayer/volume/';
+const masterPlayerPlayPlaylistId = baseUrl + '/api/music/set/masterplayer/play/';
 
 
 const statusEndpoint = baseEndpoint + 'status';
-const colorsEndpoint = baseEndpoint + 'colors';
-const partyEndpoint = baseEndpoint + 'party';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type':  'application/json'
+    'Content-Type': 'application/json'
   })
 };
 
@@ -79,8 +79,8 @@ export class RestService {
     );
   }
 
-  getStatusObservable(): Observable<Status> {
-    return this.http.get<Status>(statusEndpoint).pipe(
+  getStatusObservable(): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(statusEndpoint).pipe(
       map(model => {
         return model;
       }),
@@ -89,7 +89,7 @@ export class RestService {
   }
 
   getStatus(): Observable<Playerstatus> {
-    return this.http.get<Status>(musicUrl).pipe(
+    return this.http.get<Playerstatus>(musicUrl).pipe(
       map(model => {
         return model;
       }),
@@ -97,9 +97,23 @@ export class RestService {
     );
   }
 
+  getStatusRegular(): Observable<Playerstatus> {
+    return interval(5000).pipe(flatMap(() => {
+      return this.http.get<Playerstatus>(musicUrl);
+    }));
+  }
+
+  getPlaylistFromTo(from: string, to: string): Observable<Songinfo[]> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/get/playlist/' + from + '/' + to).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getStatus'))
+    );
+  }
 
   setMasterPlayerVolume(volume): Observable<Playerstatus> {
-    return this.http.get<Status>(masterPlayerSetVolumeUrl + volume).pipe(
+    return this.http.get<Playerstatus>(masterPlayerSetVolumeUrl + volume).pipe(
       map(model => {
         return model;
       }),
@@ -108,7 +122,7 @@ export class RestService {
   }
 
   setSlavePlayerVolume(volume): Observable<Playerstatus> {
-    return this.http.get<Status>(slavePlayerSetVolumeUrl + volume).pipe(
+    return this.http.get<Playerstatus>(slavePlayerSetVolumeUrl + volume).pipe(
       map(model => {
         return model;
       }),
@@ -116,9 +130,58 @@ export class RestService {
     );
   }
 
+  setMasterPlayerPlayPlaylistId(id: number): Observable<Playerstatus> {
+    this.playlistChanged('show');
+    return this.http.get<Playerstatus>(masterPlayerPlayPlaylistId + id.toString()).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('setMasterPlayerVolume'))
+    );
+  }
+
+  next(): Observable<Playerstatus> {
+    this.playlistChanged('show');
+    return this.http.get<Playerstatus>(commandUrl + 'next/' + this.guid).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('next'))
+    );
+  }
+
+  prev(): Observable<Playerstatus> {
+    this.playlistChanged('show');
+    return this.http.get<Playerstatus>(commandUrl + 'prev/' + this.guid).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('prev'))
+    );
+  }
+
+  play(): Observable<Playerstatus> {
+    this.playlistChanged('show');
+    return this.http.get<Playerstatus>(commandUrl + 'play/' + this.guid).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('play'))
+    );
+  }
+
+  pause(): Observable<Playerstatus> {
+    this.playlistChanged('show');
+    return this.http.get<Playerstatus>(commandUrl + 'pause/' + this.guid).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('pause'))
+    );
+  }
 
 
-  private handleError<T> (operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
@@ -132,48 +195,26 @@ export class RestService {
     };
   }
 
-  getMessagesOld() {
-    const observable = new Observable(observer => {
-        this.socket = io(baseServerUrl + ':' + wsport);
-        this.socket.on('message', (data) => {
-            const myObject = <Message>data;
-            console.warn('Message is da');
-            if (myObject.sender != null) {
-                  console.warn('Guids sind NICHT gleich');
-                  observer.next(data);
-            } else {
-                console.warn('Kein sender');
-                observer.next(data);
-            }
-        });
-        return () => {
-            this.socket.disconnect();
-        };
-    });
-
-    return observable;
-  }
-
   getMessages() {
     const observable = new Observable(observer => {
-        this.socket = io(baseServerUrl + ':' + wsport);
-        this.socket.on('message', (data) => {
-            const myObject = <Message>data;
-            if (myObject.sender != null) {
-                if (data.sender === this.guid) {
-                    console.warn('Guids sind gleich');
-                } else {
-                    console.warn('Guids sind NICHT gleich');
-                    observer.next(data);
-                }
-            } else {
-                console.warn('Kein sender');
-                observer.next(data);
-            }
-        });
-        return () => {
-            this.socket.disconnect();
-        };
+      this.socket = io(baseServerUrl + ':' + wsport);
+      this.socket.on('message', (data) => {
+        const myObject = <Message>data;
+        if (myObject.sender != null) {
+          if (data.sender === this.guid) {
+            console.warn('Guids sind gleich');
+          } else {
+            console.warn('Guids sind NICHT gleich');
+            observer.next(data);
+          }
+        } else {
+          console.warn('Kein sender');
+          observer.next(data);
+        }
+      });
+      return () => {
+        this.socket.disconnect();
+      };
     });
     return observable;
   }
@@ -188,6 +229,10 @@ export class RestService {
 
   playerStatusChanged(playerStatus: Playerstatus) {
     this.playerStatusChangeSource.next(playerStatus);
+  }
+
+  playlistChanged(command: string) {
+    this.playlistChangeSource.next(command);
   }
 
 }

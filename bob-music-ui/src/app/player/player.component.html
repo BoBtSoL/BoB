@@ -1,8 +1,49 @@
-<div class="container"> 
-    <div class="row"> 
-       <div class="col-sm-2"><app-volume-master></app-volume-master></div>
-       <div class="col">Center column</div>
-       <div class="col-sm-2"><app-volume-slave></app-volume-slave></div> 
-    </div> 
- </div>
+<br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-2 col-md-2 col-lg-2 col-xl-1">
+            <app-volume-master></app-volume-master>
+        </div>
+        <div class="col-sm-8 col-md-8 col-lg-8 col-xl-10">
+            <div class="card text-center transparend-card">
+                <div class="card-header">
+                    Player
+                </div>
+            </div>
+            <div class="card-body transparend-card">
+                <h4 class="card-title">{{currentplay_single?.title}}</h4>
+                <p class="card-text">{{currentplay_single?.artist}} </p>
+                <p class="card-text">
+                    <mat-progress-bar mode="buffer" value="{{progress}}" bufferValue="100"></mat-progress-bar>
+                </p>
+                <div class="card-body transparend-card">
+                    <div class="text-center complete-transparend red-color">
+                        <button mat-icon-button (click)="prev()">
+                            <mat-icon>fast_rewind</mat-icon>
+                        </button>
+                        <button *ngIf="isPlaying()==false" (click)="play()" mat-icon-button>
+                            <mat-icon>play_arrow</mat-icon>
+                        </button>
+                        <button *ngIf="isPlaying()==true" (click)="pause()" mat-icon-button>
+                            <mat-icon class="material-icons">pause</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="next()">
+                            <mat-icon class="material-icons">fast_forward</mat-icon>
+                        </button>
+                    </div>
+                </div>
 
+                
+                <app-last-played *ngFor="let songinfo of lastPlayed" [songinfo]="songinfo"></app-last-played>
+                <app-currently-played *ngFor="let songinfo of currentplay" [songinfo]="songinfo"></app-currently-played>
+                <app-next-played *ngFor="let songinfo of nextToPlay" [songinfo]="songinfo"></app-next-played>
+
+
+
+            </div>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-2 col-xl-1">
+            <app-volume-slave></app-volume-slave>
+        </div>
+    </div>
+</div>

@@ -269,7 +269,7 @@ var Server = function () {
             this.app.get('/api/music/playlist', function (req, res) {
                 var realPlayer = _this.getMasterPlayer();
 
-                realPlayer.getPlaylistExtendet(0, 10, function (sqeezeResult) {
+                realPlayer.getPlaylist(0, 10, function (sqeezeResult) {
                     //console.dir(sqeezeResult);
                     var stringified = JSON.stringify(sqeezeResult.result);
                     if (stringified != null) {
@@ -332,9 +332,11 @@ var Server = function () {
 
                 if (command == 'pause') {
                     realPlayer.pause(function (sqeezeResult) {
-                        var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                        res.json(JSON.parse(stringified));
-                        outerThis.notifychange(sender);
+                        realPlayer.getStatus(function (sqeezeResult2) {
+                            var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                            res.json(JSON.parse(stringified));
+                            outerThis.notifychange(sender);
+                        });
                     });
                 }
 

@@ -31,6 +31,10 @@ body{
   background: #181818;
 }
 
+.flex-fixed-width-item {
+  flex: 0 0 10px;
+}
+
 .card-header {
     padding: 0.75rem 1.25rem;
     margin-bottom: 0;

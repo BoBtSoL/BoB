@@ -292,9 +292,11 @@ class Server {
 
             if (command == 'pause') {
                 realPlayer.pause(function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
-                    outerThis.notifychange(sender);
+                    realPlayer.getStatus(function (sqeezeResult2) {
+                        var stringified = outerThis.formatResultForPlayer(sqeezeResult2.result);
+                        res.json(JSON.parse(stringified));
+                        outerThis.notifychange(sender);
+                    });
                 });
             }
 

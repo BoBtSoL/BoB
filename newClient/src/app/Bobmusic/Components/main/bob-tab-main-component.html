@@ -28,7 +28,7 @@
                         </div>
                         <div *ngIf="currentplay_single" class="card transparend-card card-outline-danger">
                             <div class="card-block">
-                                <h4 class="card-title"> {{currentplay_single.title}}</h4>
+                                <h4 class="card-title"> {{currentplay_single?.title}}</h4>
                                 <p class="card-text">{{currentplay_single?.artist}} </p>
                                 <p class="card-text">
                                     <md-progress-bar mode="buffer" value="{{progress}}" bufferValue="100"></md-progress-bar>

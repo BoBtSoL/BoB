@@ -18,6 +18,11 @@ import { VolumeMasterComponent } from './volume-master/volume-master.component';
 import { VolumeSlaveComponent } from './volume-slave/volume-slave.component';
 import { LayoutComponent } from './layout/layout.component';
 import { PlayerComponent } from './player/player.component';
+import { SettingsComponent } from './settings/settings.component';
+import { SearchComponent } from './search/search.component';
+import { LastPlayedComponent } from './player/last-played/last-played.component';
+import { CurrentlyPlayedComponent } from './player/currently-played/currently-played.component';
+import { NextPlayedComponent } from './player/next-played/next-played.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +32,12 @@ import { PlayerComponent } from './player/player.component';
     VolumeMasterComponent,
     VolumeSlaveComponent,
     LayoutComponent,
-    PlayerComponent
+    PlayerComponent,
+    SettingsComponent,
+    SearchComponent,
+    LastPlayedComponent,
+    CurrentlyPlayedComponent,
+    NextPlayedComponent
   ],
   imports: [
     FormsModule,
