@@ -382,7 +382,7 @@ var Server = function () {
 
             this.app.get('/api/music/search/song/:cmdid', function (req, res) {
                 var command = req.params.cmdid;
-                _this.squeeze.request("", ["songs", 0, 100, "search:" + command + ""], function (sqeezeResult) {
+                _this.squeeze.request("", ["songs", 0, 100, "search:" + command, "tags:galdc"], function (sqeezeResult) {
                     var stringified = JSON.stringify(sqeezeResult.result);
                     //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
@@ -394,6 +394,14 @@ var Server = function () {
                 var to = req.params.to;
                 var query = req.params.query;
                 _this.squeeze.request("", ["songs", from, to, "search:" + query + ""], function (sqeezeResult) {
+                    var stringified = JSON.stringify(sqeezeResult.result);
+                    //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                });
+            });
+
+            this.app.get('/api/music/favorites', function (req, res) {
+                _this.squeeze.request("", ["favorites", "items", 0, 10], function (sqeezeResult) {
                     var stringified = JSON.stringify(sqeezeResult.result);
                     //var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
@@ -474,6 +482,28 @@ var Server = function () {
                     var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
                     res.json(JSON.parse(stringified));
                     outerThis.notifySlaveVolumeChanged();
+                });
+            });
+
+            this.app.get('/api/music/favorite/add/:id', function (req, res) {
+                var favId = req.params.id;
+                var realPlayer = _this.getMasterPlayer();
+
+                _this.squeeze.request(realPlayer.playerId, ["favorites", "playlist", "add", "item_id:" + favId], function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
+                });
+            });
+
+            this.app.get('/api/music/favorite/play/:id', function (req, res) {
+                var favId = req.params.id;
+                var realPlayer = _this.getMasterPlayer();
+
+                _this.squeeze.request(realPlayer.playerId, ["favorites", "playlist", "insert", "item_id:" + favId], function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
                 });
             });
         }

@@ -1,0 +1,18 @@
+
+<br>
+<div class="card complete-transparend">
+    <div class="card-header text-center">
+        Musik vom Handy
+      </div>
+    <div class="card-block bob-card-block">
+        <p class="card-text">Wenn die Liste leer ist, erneutes Laden der Daten starten.</p>
+    </div>
+
+    <div class="card-footer">
+        <button class="btn btn-outline-danger" type="button" (click)="loadFavorites()">Erneues laden</button>
+    </div>
+</div>
+<br>
+<div *ngIf="favorites">
+    <app-favorite-detail *ngFor="let favorite of favorites" [favorite]="favorite"></app-favorite-detail>
+</div>

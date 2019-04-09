@@ -16,8 +16,6 @@ export class CurrentlyPlayedComponent implements OnInit {
   }
 
   public getAlbum(): string {
-
-
     if (this.songinfo.album === null) {
       return '';
     } else {

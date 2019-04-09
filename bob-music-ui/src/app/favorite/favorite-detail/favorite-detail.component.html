@@ -1,0 +1,32 @@
+<div class="card transparend-card">
+  <div class="card-header text-center">
+    Musik vom Handy abspielen
+  </div>
+  <div class="card-block bob-card-block">
+    <p class="card-text">
+      Die Musik direkt über das Handy an die Bollerwagen streamen.<br>
+      <span class="text-warning">
+        <i class="material-icons">warning</i> Achtung: Die Musikausgabe über das Handy kommt ca. 6 Sekunden verzögert
+        an!
+        <i class="material-icons">warning</i>
+      </span>
+      <br>
+      {{favorite.name}} - {{favorite.id}}
+    </p>
+  </div>
+  <div class="card-footer">
+    <div class="btn-toolbar">
+      <button (click)="playNow()" type="button" [disabled]="addedStatus>0" class="btn btn-outline-danger">
+        PLAY NOW
+      </button>
+      <button (click)="addToPlaylist()" type="button" [disabled]="addedStatus>0" class="btn btn-outline-danger ml-2">ADD</button>
+    </div>
+    <span *ngIf="addedStatus==1" class="text-warning right-float">
+      <i class="material-icons">warning</i> ...Arbeite...
+    </span>
+    <span *ngIf="addedStatus==2" class="text-success right-float">
+      <i class="material-icons">done</i> Erfolgreich
+    </span>
+
+  </div>
+</div>

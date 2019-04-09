@@ -15,6 +15,14 @@ export class LastPlayedComponent implements OnInit {
   ngOnInit() {
   }
 
+  public getAlbum(): string {
+    if (this.songinfo.album === null) {
+      return '';
+    } else {
+      return '(' + this.songinfo.album + ')';
+    }
+  }
+
   public play() {
     this.musicService.setMasterPlayerPlayPlaylistId(this.songinfo.playlist_index).subscribe();
   }

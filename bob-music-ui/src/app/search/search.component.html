@@ -1,10 +1,33 @@
-<div class="card" style="width: 18rem;">
-    <div class="card-header">
-      Featured
+<div class="col-12">
+  <br>
+  <div class="card complete-transparend">
+    <div class="card-header text-center">
+      Suche
     </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">Cras justo odio</li>
-      <li class="list-group-item">Dapibus ac facilisis in</li>
-      <li class="list-group-item">Vestibulum at eros</li>
-    </ul>
+    <div class="card transparend-card">
+      <div class="input-group">
+        <input type="text" (keyup.enter)="onSearch()" [(ngModel)]="titel" class="form-control bob-input" placeholder="Titel, Band...">
+        <span class="input-group-btn">
+          <button class="btn btn-outline-danger" type="button" (click)="onSearch()">Los!</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="card-block text-center" *ngIf="searching==true">
+      <mat-progress-spinner mode="indeterminate" style="margin:0 auto;"></mat-progress-spinner>
+    </div>
+
+    <div *ngIf="resultsFound()==true && searching==false">
+      <app-result *ngFor="let comment of resultListSplit" [comment]="comment"></app-result>
+    </div>
+    <div *ngIf="resultsFound()==false && searching==false">
+      <div class="card transparend-card">
+        <div class="card-block">
+          <p class="card-text">
+            Kein Ergebnis oder noch nicht gesucht
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
+</div>

@@ -13,6 +13,8 @@ import { Playerstatus } from './Model/playerstatus';
 import { Songinfo } from './Model/songinfo';
 import { Player } from './Model/player';
 import { Guid } from './Model/guid';
+import { SongSearchResult } from './model/songs-search-result';
+import { FavoriteRoot } from './model/favorite-root';
 
 const baseEndpoint = 'http://tsolrasp:8000/';
 const wsport = '3001';
@@ -112,6 +114,33 @@ export class RestService {
     );
   }
 
+  getFavorites(): Observable<FavoriteRoot> {
+    return this.http.get<FavoriteRoot>(baseUrl + '/api/music/favorites').pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getFavorites'))
+    );
+  }
+
+  addFavoriteToPlaylist(favId: string): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/favorite/add/' + favId).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('addFavoriteToPlaylist'))
+    );
+  }
+
+  playFavoriteNow(favId: string): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/favorite/play/' + favId).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getFavorites'))
+    );
+  }
+
   setMasterPlayerVolume(volume): Observable<Playerstatus> {
     return this.http.get<Playerstatus>(masterPlayerSetVolumeUrl + volume).pipe(
       map(model => {
@@ -180,6 +209,41 @@ export class RestService {
     );
   }
 
+  addToPlaylist(id: number): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/set/masterplayer/addtoplaylist/' + id).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('play'))
+    );
+  }
+
+  playNow(id: number): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/set/masterplayer/addtoplaylist/' + id).pipe(
+      map(model => {
+        return this.next();
+      }),
+      catchError(this.handleError<any>('play'))
+    );
+  }
+
+  performeSongSearch(song: string): Observable<SongSearchResult> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/search/song/' + song).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('play'))
+    );
+  }
+
+  resetServer(): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/reset').pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('resetServer'))
+    );
+  }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

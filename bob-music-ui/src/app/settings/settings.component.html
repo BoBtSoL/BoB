@@ -1,14 +1,18 @@
 <br>
-<div class="col-12">
-    <div class="card transparend-card">
-        <div class="card-header">Zufallsmix:</div>
-        <div class="card-block">
-            <p class="card-text">
-                Zufallsmix starten
-            </p>
+
+<div class="card transparend-card">
+    <div class="card-header">Servereinstellungen:</div>
+    <div class="card-block">
+        <div *ngIf="status==2">
+            <p><i class="material-icons">warning</i>Test nicht erfolgreich</p>
         </div>
-        <div class="card-footer">
-            <button class="btn btn-outline-danger" type="button" (click)="startRandomPlay()">Alles</button>
+        <div *ngIf="status==1">
+            <p> <i class="material-icons">done</i>Test erfolgreich</p>
         </div>
+    </div>
+
+    <div class="card-footer">
+        <button class="btn btn-outline-danger" type="button" (click)="testConfig()">Test connection</button>
+        <button class="btn btn-outline-danger" type="button" (click)="resetConfig()">Reset server</button>
     </div>
 </div>

@@ -8,4 +8,5 @@ export class Songinfo {
         album: string;
         duration: string;
         offsetFromCurrentPlaying: number;
+        coverid:string;
 }

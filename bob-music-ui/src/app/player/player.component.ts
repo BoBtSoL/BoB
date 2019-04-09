@@ -258,10 +258,17 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit() {
     this.progress = 0;
+
+
     this.musicService.getStatus().subscribe((serverstatus) => {
       this.model = serverstatus;
       this.recalculatePlaylist(true);
     });
+
+    const tasksSubscription = this.musicService.getStatusRegular().subscribe(data => {
+      this.checkForChanges(data);
+    });
+
 
     this.guid = this.musicService.guid;
   }
