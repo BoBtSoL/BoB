@@ -24,6 +24,7 @@ export class PlayerComponent implements OnInit {
   progress: number;
   progressString: string;
   guid: string;
+  isMusicFromhandy: boolean;
 
   lastplayedToShow = 3;
   connection;
@@ -31,10 +32,16 @@ export class PlayerComponent implements OnInit {
 
   constructor(public musicService: RestService) {
     this.working = false;
+    this.isMusicFromhandy = false;
     this.playListSubscription = this.musicService.playlistChange$.subscribe(
       change => {
         if (change === 'show') {
           this.working = true;
+        } else if (change === 'reload') {
+          this.musicService.getStatus().subscribe((serverstatus) => {
+            this.model = serverstatus;
+            this.recalculatePlaylist(true);
+          });
         } else {
           this.working = false;
         }
@@ -163,8 +170,14 @@ export class PlayerComponent implements OnInit {
         const durationString = String(this.currentplay_single.duration);
         const timeString = this.model.time;
 
-        if (durationString != null && durationString != '' && durationString.length > 1) {
+        let durationNumber = 0;
 
+        if (this.isNumeric(durationString)) {
+            durationNumber = this.intVal(durationString);
+        }
+
+        if (durationNumber > 0) {
+          this.isMusicFromhandy=false;
           total = Number(durationString.split('.')[0]);
           current = Number(timeString.toString().split('.')[0]);
           this.progress = (current / total) * 100;
@@ -172,6 +185,7 @@ export class PlayerComponent implements OnInit {
           this.progressString = this.progress.toString();
           // console.warn('Errechnet ' + this.progress);
         } else {
+          this.isMusicFromhandy=true;
           this.progress = 0;
           this.progressString = '0';
         }
@@ -258,8 +272,6 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit() {
     this.progress = 0;
-
-
     this.musicService.getStatus().subscribe((serverstatus) => {
       this.model = serverstatus;
       this.recalculatePlaylist(true);

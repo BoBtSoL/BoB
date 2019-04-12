@@ -1,6 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~bootstrap/scss/bootstrap';
 @import '~bootstrap/scss/bootstrap-grid';
+@import '~bootstrap/scss/_variables';
+@import "~bootstrap/scss/_functions";
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 600px,
+  md: 800px,
+  lg: 1000px,
+  xl: 1500px
+);
+
+@import '~bootstrap/scss/bootstrap';
 
 /*@import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css"; */
 
@@ -24,7 +35,6 @@ $accent: mat-palette($mat-red, 900);
 $warn:    mat-palette($mat-red, 900);
 $theme: mat-dark-theme($primary, $accent, $warn);
 @include angular-material-theme($theme);
-
   
 body{
   color: #eaeaea;
@@ -32,8 +42,24 @@ body{
 }
 
 .flex-fixed-width-item {
-  flex: 0 0 10px;
+  flex: 0 0 25px;
 }
+
+.bob-max {
+  max-width: 100%;
+}
+
+.bob-background {
+  color: #eaeaea;
+  background: #181818  url("./img/bob_stern_white.svg") no-repeat center;
+  background-position: 50% 150px;
+  background-size: 50% auto;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 1280px;
+  }
+  
 
 .card-header {
     padding: 0.75rem 1.25rem;
@@ -233,3 +259,4 @@ body{
       transform: rotate(359deg);
     }
   }
+

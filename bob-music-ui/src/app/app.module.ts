@@ -25,6 +25,8 @@ import { NextPlayedComponent } from './player/next-played/next-played.component'
 import { ResultComponent } from './search/result/result.component';
 import { FavoriteComponent } from './favorite/favorite.component';
 import { FavoriteDetailComponent } from './favorite/favorite-detail/favorite-detail.component';
+import { PlaylistComponent } from './playlist/playlist.component';
+import { PlaylistDetailComponent } from './playlist/playlist-detail/playlist-detail.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { FavoriteDetailComponent } from './favorite/favorite-detail/favorite-det
     NextPlayedComponent,
     ResultComponent,
     FavoriteComponent,
-    FavoriteDetailComponent
+    FavoriteDetailComponent,
+    PlaylistComponent,
+    PlaylistDetailComponent
   ],
   imports: [
     FormsModule,

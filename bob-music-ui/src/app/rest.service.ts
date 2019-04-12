@@ -4,9 +4,6 @@ import { Observable, of, Subject, fromEventPattern } from 'rxjs';
 import { map, catchError, tap, flatMap } from 'rxjs/operators';
 import { interval } from 'rxjs';
 import { Message } from './model/Message';
-import { ColorModel } from './model/color-model';
-import { FadingModel } from './model/fading-model';
-import { FadingStatus } from './model/fading-status';
 import * as io from 'socket.io-client';
 
 import { Playerstatus } from './Model/playerstatus';
@@ -15,12 +12,15 @@ import { Player } from './Model/player';
 import { Guid } from './Model/guid';
 import { SongSearchResult } from './model/songs-search-result';
 import { FavoriteRoot } from './model/favorite-root';
+import { PlaylistsLoopRoot } from './model/playlistslooproot';
 
-const baseEndpoint = 'http://tsolrasp:8000/';
 const wsport = '3001';
 
-const baseServerUrl = '192.168.42.1';
-const baseUrl = 'http://192.168.42.1:3000';
+//const baseServerUrl = '192.168.42.1';
+//const baseUrl = 'http://192.168.42.1:3000';
+
+const baseServerUrl = 'localhost';
+const baseUrl = 'http://localhost:3000';
 const musicUrl = baseUrl + '/api/music/status';
 const commandUrl = baseUrl + '/api/music/command/';
 
@@ -29,9 +29,6 @@ const slavePlayerUrl = baseUrl + '/api/music/get/slaveplayer';
 const masterPlayerSetVolumeUrl = baseUrl + '/api/music/set/masterplayer/volume/';
 const slavePlayerSetVolumeUrl = baseUrl + '/api/music/set/slaveplayer/volume/';
 const masterPlayerPlayPlaylistId = baseUrl + '/api/music/set/masterplayer/play/';
-
-
-const statusEndpoint = baseEndpoint + 'status';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -56,7 +53,6 @@ export class RestService {
   private playerStatusChangeSource = new Subject<Playerstatus>();
   public playerStatusChange$ = this.playerStatusChangeSource.asObservable();
 
-
   public guid = Guid.newGuid();
 
   constructor(private http: HttpClient) {
@@ -78,15 +74,6 @@ export class RestService {
         return model;
       }),
       catchError(this.handleError<any>('getSlavePlayer'))
-    );
-  }
-
-  getStatusObservable(): Observable<Playerstatus> {
-    return this.http.get<Playerstatus>(statusEndpoint).pipe(
-      map(model => {
-        return model;
-      }),
-      catchError(this.handleError<any>('getStatus'))
     );
   }
 
@@ -129,15 +116,6 @@ export class RestService {
         return model;
       }),
       catchError(this.handleError<any>('addFavoriteToPlaylist'))
-    );
-  }
-
-  playFavoriteNow(favId: string): Observable<Playerstatus> {
-    return this.http.get<Playerstatus>(baseUrl + '/api/music/favorite/play/' + favId).pipe(
-      map(model => {
-        return model;
-      }),
-      catchError(this.handleError<any>('getFavorites'))
     );
   }
 
@@ -218,10 +196,19 @@ export class RestService {
     );
   }
 
+  removeFromPlaylist(id: number): Observable<Playerstatus> {
+    return this.http.get<Playerstatus>(baseUrl + '/api/music/set/masterplayer/removefromplaylist/' + id).pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('removeFromPlaylist'))
+    );
+  }
+
   playNow(id: number): Observable<Playerstatus> {
     return this.http.get<Playerstatus>(baseUrl + '/api/music/set/masterplayer/addtoplaylist/' + id).pipe(
       map(model => {
-        return this.next();
+        return this.next().subscribe();
       }),
       catchError(this.handleError<any>('play'))
     );
@@ -233,6 +220,15 @@ export class RestService {
         return model;
       }),
       catchError(this.handleError<any>('play'))
+    );
+  }
+
+  getPlaylists(): Observable<PlaylistsLoopRoot> {
+    return this.http.get<PlaylistsLoopRoot>(baseUrl + '/api/music/get/playlists').pipe(
+      map(model => {
+        return model;
+      }),
+      catchError(this.handleError<any>('getPlaylists'))
     );
   }
 

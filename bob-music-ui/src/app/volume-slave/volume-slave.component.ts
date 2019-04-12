@@ -20,15 +20,17 @@ export class VolumeSlaveComponent implements OnInit {
     this.ready = false;
     this.subscription = this.rest.slaveVolumeChanged$.subscribe(
       mission => {
-          this.reInit();
+        this.reInit();
       });
 
   }
 
   ngOnInit() {
     this.rest.getSlavePlayer().subscribe((playerStatus) => {
-      this.playerStatus = playerStatus;
-      this.setValuesCorrect();
+      if (playerStatus.power != null) {
+        this.playerStatus = playerStatus;
+        this.setValuesCorrect();
+      }
     });
   }
 
@@ -38,12 +40,12 @@ export class VolumeSlaveComponent implements OnInit {
       this.playerStatus = playerStatus;
       this.setValuesCorrect();
     });
-}
+  }
 
   setValuesCorrect() {
     if (this.playerStatus != null) {
-        this.sliderVal = this.playerStatus.mixer_volume;
-        this.ready = true;
+      this.sliderVal = this.playerStatus.mixer_volume;
+      this.ready = true;
     }
   }
 

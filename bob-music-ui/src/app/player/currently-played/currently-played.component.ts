@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Songinfo } from 'src/app/Model/songinfo';
 import { RestService } from 'src/app/rest.service';
 
@@ -7,19 +7,26 @@ import { RestService } from 'src/app/rest.service';
   templateUrl: './currently-played.component.html',
   styleUrls: ['./currently-played.component.scss']
 })
-export class CurrentlyPlayedComponent implements OnInit {
+export class CurrentlyPlayedComponent implements OnInit, OnChanges {
 
   @Input() songinfo: Songinfo;
-  constructor(public musicService: RestService) { }
+  formattedString: string;
+  constructor(public musicService: RestService) {
+    this.formattedString = 'Intialized';
+  }
 
   ngOnInit() {
   }
 
-  public getAlbum(): string {
-    if (this.songinfo.album === null) {
-      return '';
-    } else {
-      return '(' + this.songinfo.album + ')';
+  ngOnChanges() {
+    this.formattedString = '';
+    if (this.songinfo.artist !== null && this.songinfo.artist !== undefined) {
+      this.formattedString = this.songinfo.artist + ' - ';
+    }
+    this.formattedString = this.formattedString + this.songinfo.title;
+
+    if (!(this.songinfo.album === null || this.songinfo.album === undefined)) {
+      this.formattedString = this.formattedString + ' (' + this.songinfo.album + ')';
     }
   }
 

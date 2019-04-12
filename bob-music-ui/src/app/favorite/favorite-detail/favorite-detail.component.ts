@@ -21,14 +21,15 @@ export class FavoriteDetailComponent implements OnInit {
   addToPlaylist() {
     const realId = this.favorite.id.substr(this.favorite.id.lastIndexOf('.') + 1);
     this.musicService.addFavoriteToPlaylist(realId).subscribe(ret => {
-      this.musicService.playlistChanged('show');
+      this.musicService.playlistChanged('reload');
     });
   }
 
   playNow() {
     const realId = this.favorite.id.substr(this.favorite.id.lastIndexOf('.') + 1);
-    this.musicService.playFavoriteNow(realId).subscribe(ret => {
-      this.musicService.playlistChanged('show');
+    this.musicService.addFavoriteToPlaylist(realId).subscribe(ret => {
+      this.musicService.next().subscribe();
+      this.musicService.playlistChanged('reload');
     });
   }
 

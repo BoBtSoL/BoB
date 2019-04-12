@@ -25,7 +25,7 @@
             <button (click)="addToPlaylist()" type="button" [disabled]="addedStatus>0" class="btn btn-outline-danger ml-2">ADD</button>
 
             <span *ngIf="addedStatus==1" class="text-warning right-float">
-                <i class="material-icons">warning</i> ...Arbeite...
+                <i class="material-icons">warning</i> ...Removing...
             </span>
             <span *ngIf="addedStatus==2" class="text-success right-float">
                 <i class="material-icons">done</i> Erfolgreich

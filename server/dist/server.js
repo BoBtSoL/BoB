@@ -441,6 +441,17 @@ var Server = function () {
                 });
             });
 
+            this.app.get('/api/music/set/masterplayer/removefromplaylist/:index', function (req, res) {
+                var index = req.params.index;
+                var realPlayer = _this.getMasterPlayer();
+
+                _this.squeeze.request(realPlayer.playerId, ["playlist", "delete", index], function (sqeezeResult) {
+                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
+                    res.json(JSON.parse(stringified));
+                    outerThis.notifychange();
+                });
+            });
+
             this.app.get('/api/music/set/masterplayer/startenow/:trackid', function (req, res) {
                 var trackid = req.params.trackid;
                 var realPlayer = _this.getMasterPlayer();
@@ -486,17 +497,6 @@ var Server = function () {
             });
 
             this.app.get('/api/music/favorite/add/:id', function (req, res) {
-                var favId = req.params.id;
-                var realPlayer = _this.getMasterPlayer();
-
-                _this.squeeze.request(realPlayer.playerId, ["favorites", "playlist", "add", "item_id:" + favId], function (sqeezeResult) {
-                    var stringified = outerThis.formatResultForPlayer(sqeezeResult.result);
-                    res.json(JSON.parse(stringified));
-                    outerThis.notifychange();
-                });
-            });
-
-            this.app.get('/api/music/favorite/play/:id', function (req, res) {
                 var favId = req.params.id;
                 var realPlayer = _this.getMasterPlayer();
 

@@ -27,8 +27,10 @@ export class VolumeMasterComponent implements OnInit {
 
   ngOnInit() {
     this.rest.getMasterPlayer().subscribe((playerStatus) => {
-      this.playerStatus = playerStatus;
-      this.setValuesCorrect();
+      if (playerStatus.power != null) {
+        this.playerStatus = playerStatus;
+        this.setValuesCorrect();
+      }
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Songinfo } from 'src/app/Model/songinfo';
 import { RestService } from 'src/app/rest.service';
 
@@ -7,12 +7,17 @@ import { RestService } from 'src/app/rest.service';
   templateUrl: './next-played.component.html',
   styleUrls: ['./next-played.component.scss']
 })
-export class NextPlayedComponent implements OnInit {
+export class NextPlayedComponent implements OnInit, OnChanges {
 
+  adding: boolean;
+  deleting: boolean;
+  formattedString: string;
   @Input() songinfo: Songinfo;
   constructor(public musicService: RestService) { }
 
   ngOnInit() {
+    this.deleting = false;
+    this.adding = false;
   }
 
   public getAlbum(): string {
@@ -24,7 +29,26 @@ export class NextPlayedComponent implements OnInit {
   }
 
   public play() {
+    this.adding = true;
     this.musicService.setMasterPlayerPlayPlaylistId(this.songinfo.playlist_index).subscribe();
+  }
+
+  public remove() {
+    this.deleting = true;
+    this.musicService.removeFromPlaylist(this.songinfo.playlist_index).subscribe(res => {
+    });
+  }
+
+  ngOnChanges() {
+    this.formattedString = '';
+    if (this.songinfo.artist !== null && this.songinfo.artist !== undefined) {
+      this.formattedString = this.songinfo.artist + ' - ';
+    }
+    this.formattedString = this.formattedString + this.songinfo.title;
+
+    if (!(this.songinfo.album === null || this.songinfo.album === undefined)) {
+      this.formattedString = this.formattedString + ' (' + this.songinfo.album + ')';
+    }
   }
 
 }
